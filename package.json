@@ -25,13 +25,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint --config eslint.config.mjs ."
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "lint": "eslint --config eslint.config.mjs .",
+    "typecheck": "tsc --noEmit"
   },
   "browserslist": {
     "production": [
