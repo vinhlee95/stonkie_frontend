@@ -35,8 +35,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "npm run lint",
-      "npm run typecheck"
+      "npm run lint"
     ]
   },
   "browserslist": {

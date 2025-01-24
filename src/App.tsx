@@ -8,6 +8,7 @@ import {
   ThemeProvider,
   Tabs,
   Tab,
+  
 } from '@mui/material';
 import FinancialChatbox from './components/FinancialChatbox';
 import { 
@@ -81,26 +82,6 @@ const App: React.FC = () => {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const searchSymbols = async (query: string) => {
-    if (!query || query.length < 1) {
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${query}&apikey=${process.env.REACT_APP_ALPHA_VANTAGE_API_KEY}`
-      );
-      const data = await response.json();
-      
-      if (data.bestMatches) {
-        // Handle the search results if needed in the future
-        console.log(data.bestMatches);
-      }
-    } catch (err) {
-      console.error('Failed to fetch symbols:', err);
     }
   };
 
