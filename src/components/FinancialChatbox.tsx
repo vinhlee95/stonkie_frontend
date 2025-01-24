@@ -102,8 +102,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
         content: responseData.data.data || responseData.data 
       };
       setMessages(prev => [...prev, botMessage]);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_) {
+    } catch (error) {
       // Add error message to chat
       const errorMessage: Message = { 
         type: 'bot', 

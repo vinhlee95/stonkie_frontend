@@ -25,7 +25,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint --config eslint.config.mjs .",
+    "lint": "eslint --config .eslintrc.json .",
     "typecheck": "tsc --noEmit"
   },
   "husky": {

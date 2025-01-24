@@ -49,7 +49,6 @@ const CompanySearch: React.FC<CompanySearchProps> = ({
           }))
         );
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err) {
       console.error('Failed to fetch symbols:', err);
     } finally {
