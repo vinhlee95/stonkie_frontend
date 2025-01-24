@@ -28,6 +28,17 @@
     "lint": "eslint --config eslint.config.mjs .",
     "typecheck": "tsc --noEmit"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "npm run lint",
+      "npm run typecheck"
+    ]
+  },
   "browserslist": {
     "production": [
       ">0.2%",

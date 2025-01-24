@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { FinancialData, ReportType } from './types';
 import {
   Alert,
@@ -10,7 +10,6 @@ import {
   Tab,
 } from '@mui/material';
 import FinancialChatbox from './components/FinancialChatbox';
-import { debounce } from 'lodash';
 import { 
   Chart as ChartJS, 
   CategoryScale, 
@@ -58,20 +57,7 @@ const App: React.FC = () => {
     balance_sheet: null,
     cash_flow: null
   });
-  const [searchResults, setSearchResults] = useState<Array<{
-    symbol: string;
-    name: string;
-  }>>([]);
-  const [searchLoading, setSearchLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedSearch = useCallback(
-    debounce((query: string) => {
-      searchSymbols(query);
-    }, 300),
-    []
-  );
 
   const fetchFinancialData = async (reportType: ReportType) => {
     try {
@@ -100,11 +86,9 @@ const App: React.FC = () => {
 
   const searchSymbols = async (query: string) => {
     if (!query || query.length < 1) {
-      setSearchResults([]);
       return;
     }
 
-    setSearchLoading(true);
     try {
       const response = await fetch(
         `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${query}&apikey=${process.env.REACT_APP_ALPHA_VANTAGE_API_KEY}`
@@ -112,17 +96,11 @@ const App: React.FC = () => {
       const data = await response.json();
       
       if (data.bestMatches) {
-        setSearchResults(
-          data.bestMatches.map((match: any) => ({
-            symbol: match['1. symbol'],
-            name: match['2. name'],
-          }))
-        );
+        // Handle the search results if needed in the future
+        console.log(data.bestMatches);
       }
     } catch (err) {
       console.error('Failed to fetch symbols:', err);
-    } finally {
-      setSearchLoading(false);
     }
   };
 
