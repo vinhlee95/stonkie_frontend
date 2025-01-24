@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Grid } from '@mui/material';
 import { FinancialData, ReportType } from '../types';
 import { Chart } from 'react-chartjs-2';
 
@@ -144,10 +144,92 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
     );
   };
 
+  const renderEPSChart = (data: FinancialData | null) => {
+    console.log(data);
+    if (!data) return null;
+    const columns = data.columns;
+
+    const basicEPS = data.data.find(row => {
+      const metric = row[columns[0]];
+      return typeof metric === 'string' && 
+        metric.toLowerCase().includes('basic eps');
+    });
+    const dilutedEPS = data.data.find(row => {
+      const metric = row[columns[0]];
+      return typeof metric === 'string' && 
+        metric.toLowerCase().includes('diluted eps');
+    });
+
+    if (!basicEPS || !dilutedEPS) return null;
+
+    // Use the same column reversal logic as the main chart
+    const years = data.columns.slice(1).reverse();
+
+    const chartData = {
+      labels: years,
+      datasets: [
+        {
+          type: 'bar' as const,
+          label: 'Basic EPS',
+          data: years.map(year => parseFloat(basicEPS[year].toString().replace(/[^0-9.-]+/g, ''))),
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1,
+        },
+        {
+          type: 'bar' as const,
+          label: 'Diluted EPS',
+          data: years.map(year => parseFloat(dilutedEPS[year].toString().replace(/[^0-9.-]+/g, ''))),
+          backgroundColor: 'rgba(153, 102, 255, 0.5)',
+          borderColor: 'rgba(153, 102, 255, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top' as const,
+        },
+        title: {
+          display: true,
+          text: 'EPS Trends',
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value: any): string {
+              return `$${Number(value).toFixed(2)}`;
+            },
+          },
+        },
+      },
+    };
+
+    return (
+      <Box sx={{ height: 400, mt: 4 }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Earnings Per Share
+        </Typography>
+        <Chart type='bar' data={chartData} options={options} />
+      </Box>
+    );
+  };
+
   return (
-    <>
-      {renderFinancialChart(financialData.income_statement)}
-    </>
+    <Grid container spacing={4}>
+      <Grid item xs={12} md={6}>
+        {renderFinancialChart(financialData.income_statement)}
+      </Grid>
+      <Grid item xs={12} md={6}>
+        {renderEPSChart(financialData.income_statement)}
+      </Grid>
+    </Grid>
   );
 };
 
