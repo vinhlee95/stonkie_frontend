@@ -136,6 +136,8 @@ const App: React.FC = () => {
             element={<TickerDetail 
               defaultTab="overview" 
               financialData={financialData}
+              fetchFinancialData={fetchFinancialData}
+              loading={loading}
             />} 
           />
           <Route 
@@ -143,6 +145,8 @@ const App: React.FC = () => {
             element={<TickerDetail 
               defaultTab="statements" 
               financialData={financialData}
+              fetchFinancialData={fetchFinancialData}
+              loading={loading}
             />} 
           />
         </Routes>

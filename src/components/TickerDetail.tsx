@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Overview from './Overview';
 import Statements from './Statements';
@@ -7,16 +7,17 @@ import { FinancialData, ReportType } from '../types';
 
 interface TickerDetailProps {
   defaultTab: 'overview' | 'statements';
-  financialData?: Record<ReportType, FinancialData | null>;
+  fetchFinancialData: (ticker: string, reportType: ReportType) => Promise<any>;
+  financialData: Record<ReportType, FinancialData | null>;
+  loading: boolean;
 }
 
-const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData }) => {
+const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, fetchFinancialData, loading }) => {
   const { ticker } = useParams<{ ticker: string }>();
   const navigate = useNavigate();
   const [value, setValue] = useState(defaultTab);
-
-  // Show loading or error state if no data
-  if (!financialData) {
+  
+  if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
         <CircularProgress />
@@ -32,6 +33,13 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData }
     setValue(newValue);
     navigate(`/tickers/${ticker}/${newValue}`);
   };
+
+  useEffect(() => {
+    if (!financialData?.income_statement && !financialData?.balance_sheet && !financialData?.cash_flow && ticker) {
+      const reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow'];
+      Promise.all(reportTypes.map(type => fetchFinancialData(ticker, type)));
+    }
+  }, [financialData, fetchFinancialData, ticker]);
 
   return (
     <Box sx={{ width: '100%' }}>
