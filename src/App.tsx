@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useSearchParams, useNavigate } from 'react-router-dom';
 import { FinancialData, ReportType } from './types';
 import {
   Alert,
@@ -27,6 +27,7 @@ import {
 import Overview from './components/Overview';
 import Statements from './components/Statements';
 import CompanySearch from './components/CompanySearch';
+import TickerDetail from './components/TickerDetail';
 
 // Register ChartJS components
 ChartJS.register(
@@ -50,29 +51,27 @@ const theme = createTheme({
   },
 });
 
-// Create a new Home component to contain the existing content
-const Home: React.FC = () => {
-  const [ticker, setTicker] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+// Lift the state and handlers to App
+const App: React.FC = () => {
+  const navigate = useNavigate();
   const [financialData, setFinancialData] = useState<Record<ReportType, FinancialData | null>>({
     income_statement: null,
     balance_sheet: null,
     cash_flow: null
   });
-  const [activeTab, setActiveTab] = useState(0);
 
-  const fetchFinancialData = async (reportType: ReportType) => {
+  // Move these functions from Home to App
+  const fetchFinancialData = async (ticker: string, reportType: ReportType) => {
     try {
-      setLoading(true);
-      setError(null);
-      
       const response = await fetch(
         `${BACKEND_URL}/api/financial-data/${ticker.toLowerCase()}/${reportType}`
       );
       
       if (!response.ok) {
-        throw new Error(`Failed to fetch ${reportType} data`);
+        if (response.status === 404) {
+          throw new Error(`No ${reportType.replace(/_/g, ' ')} data found for ${ticker}`);
+        }
+        throw new Error(`Failed to fetch ${reportType.replace(/_/g, ' ')} data (${response.status})`);
       }
 
       const data = await response.json();
@@ -80,19 +79,68 @@ const Home: React.FC = () => {
         ...prev,
         [reportType]: data
       }));
+      
+      // Use navigate instead of navigator
+      navigate(`/tickers/${ticker.toLowerCase()}/overview`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
+      if (err instanceof Error) {
+        throw new Error(`Error fetching ${reportType.replace(/_/g, ' ')}: ${err.message}`);
+      }
+      throw new Error(`Unexpected error fetching ${reportType.replace(/_/g, ' ')}`);
     }
   };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <Routes>
+        <Route path="/" element={<Home 
+          financialData={financialData}
+          fetchFinancialData={fetchFinancialData}
+        />} />
+        <Route 
+          path="/tickers/:ticker/overview" 
+          element={<TickerDetail 
+            defaultTab="overview" 
+            financialData={financialData}
+          />} 
+        />
+        <Route 
+          path="/tickers/:ticker/statements" 
+          element={<TickerDetail 
+            defaultTab="statements" 
+            financialData={financialData}
+          />} 
+        />
+      </Routes>
+    </ThemeProvider>
+  );
+};
+
+// Modify Home component to receive props
+const Home: React.FC<{
+  financialData: Record<ReportType, FinancialData | null>;
+  fetchFinancialData: (ticker: string, reportType: ReportType) => Promise<any>;
+}> = ({ financialData, fetchFinancialData }) => {
+  const [ticker, setTicker] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ticker.trim()) return;
 
-    const reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow'];
-    await Promise.all(reportTypes.map(type => fetchFinancialData(type)));
+    setLoading(true);
+    setError(null);
+
+    try {
+      const reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow'];
+      await Promise.all(reportTypes.map(type => fetchFinancialData(ticker, type)));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -155,17 +203,6 @@ const Home: React.FC = () => {
         />
       </Box>
     </Container>
-  );
-};
-
-// Refactored App component with Router
-const App: React.FC = () => {
-  return (
-    <ThemeProvider theme={theme}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </ThemeProvider>
   );
 };
 
