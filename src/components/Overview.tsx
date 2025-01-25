@@ -145,7 +145,6 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
   };
 
   const renderEPSChart = (data: FinancialData | null) => {
-    console.log(data);
     if (!data) return null;
     const columns = data.columns;
 

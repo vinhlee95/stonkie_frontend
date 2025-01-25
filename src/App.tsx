@@ -59,6 +59,9 @@ const App: React.FC = () => {
     balance_sheet: null,
     cash_flow: null
   });
+  const [ticker, setTicker] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Move these functions from Home to App
   const fetchFinancialData = async (ticker: string, reportType: ReportType) => {
@@ -90,42 +93,6 @@ const App: React.FC = () => {
     }
   };
 
-  return (
-    <ThemeProvider theme={theme}>
-      <Routes>
-        <Route path="/" element={<Home 
-          financialData={financialData}
-          fetchFinancialData={fetchFinancialData}
-        />} />
-        <Route 
-          path="/tickers/:ticker/overview" 
-          element={<TickerDetail 
-            defaultTab="overview" 
-            financialData={financialData}
-          />} 
-        />
-        <Route 
-          path="/tickers/:ticker/statements" 
-          element={<TickerDetail 
-            defaultTab="statements" 
-            financialData={financialData}
-          />} 
-        />
-      </Routes>
-    </ThemeProvider>
-  );
-};
-
-// Modify Home component to receive props
-const Home: React.FC<{
-  financialData: Record<ReportType, FinancialData | null>;
-  fetchFinancialData: (ticker: string, reportType: ReportType) => Promise<any>;
-}> = ({ financialData, fetchFinancialData }) => {
-  const [ticker, setTicker] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState(0);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ticker.trim()) return;
@@ -143,29 +110,79 @@ const Home: React.FC<{
     }
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
   const handleTickerChange = (newTicker: string) => {
     setTicker(newTicker);
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <CompanySearch
-        ticker={ticker}
-        loading={loading}
-        onTickerChange={handleTickerChange}
-        onSubmit={handleSubmit}
-      />
+    <ThemeProvider theme={theme}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <CompanySearch
+          ticker={ticker}
+          loading={loading}
+          onTickerChange={handleTickerChange}
+          onSubmit={handleSubmit}
+        />
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 4 }}>
-          {error}
-        </Alert>
-      )}
+        {error && (
+          <Alert severity="error" sx={{ mb: 4 }}>
+            {error}
+          </Alert>
+        )}
 
+        <Routes>
+          <Route path="/" element={<Home 
+            financialData={financialData}
+          />} />
+          <Route 
+            path="/tickers/:ticker/overview" 
+            element={<TickerDetail 
+              defaultTab="overview" 
+              financialData={financialData}
+            />} 
+          />
+          <Route 
+            path="/tickers/:ticker/statements" 
+            element={<TickerDetail 
+              defaultTab="statements" 
+              financialData={financialData}
+            />} 
+          />
+        </Routes>
+
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 20,
+            right: 20,
+            zIndex: 1000,
+            boxShadow: 20,
+            maxWidth: '500px',
+            width: '100%',
+          }}
+        >
+          <FinancialChatbox 
+            ticker={ticker} 
+            initialMessage="Hi! My name is Stonkie, your stock agent. Feel free to ask me anything about a particular stock you are interested in."
+          />
+        </Box>
+      </Container>
+    </ThemeProvider>
+  );
+};
+
+// Modify Home component to receive props
+const Home: React.FC<{
+  financialData: Record<ReportType, FinancialData | null>;
+}> = ({ financialData }) => {
+  const [activeTab, setActiveTab] = useState(0);
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
+  return (
+    <>
       {(financialData.income_statement || financialData.balance_sheet || financialData.cash_flow) && (
         <>
           <Tabs 
@@ -185,24 +202,7 @@ const Home: React.FC<{
           {activeTab === 1 && <Statements financialData={financialData} />}
         </>
       )}
-
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          zIndex: 1000,
-          boxShadow: 20,
-          maxWidth: '500px',
-          width: '100%',
-        }}
-      >
-        <FinancialChatbox 
-          ticker={ticker} 
-          initialMessage="Hi! My name is Stonkie, your stock agent. Feel free to ask me anything about a particular stock you are interested in."
-        />
-      </Box>
-    </Container>
+    </>
   );
 };
 
