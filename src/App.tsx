@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { FinancialData, ReportType } from './types';
 import {
   Alert,
@@ -8,7 +9,6 @@ import {
   ThemeProvider,
   Tabs,
   Tab,
-  
 } from '@mui/material';
 import FinancialChatbox from './components/FinancialChatbox';
 import { 
@@ -49,7 +49,9 @@ const theme = createTheme({
     fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
   },
 });
-const App: React.FC = () => {
+
+// Create a new Home component to contain the existing content
+const Home: React.FC = () => {
   const [ticker, setTicker] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -102,41 +104,39 @@ const App: React.FC = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
-        <CompanySearch
-          ticker={ticker}
-          loading={loading}
-          onTickerChange={handleTickerChange}
-          onSubmit={handleSubmit}
-        />
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <CompanySearch
+        ticker={ticker}
+        loading={loading}
+        onTickerChange={handleTickerChange}
+        onSubmit={handleSubmit}
+      />
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 4 }}>
-            {error}
-          </Alert>
-        )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 4 }}>
+          {error}
+        </Alert>
+      )}
 
-        {(financialData.income_statement || financialData.balance_sheet || financialData.cash_flow) && (
-          <>
-            <Tabs 
-              value={activeTab} 
-              onChange={handleTabChange}
-              sx={{ 
-                borderBottom: 1, 
-                borderColor: 'divider',
-                mb: 3
-              }}
-            >
-              <Tab label="Overview" />
-              <Tab label="Statements" />
-            </Tabs>
+      {(financialData.income_statement || financialData.balance_sheet || financialData.cash_flow) && (
+        <>
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange}
+            sx={{ 
+              borderBottom: 1, 
+              borderColor: 'divider',
+              mb: 3
+            }}
+          >
+            <Tab label="Overview" />
+            <Tab label="Statements" />
+          </Tabs>
 
-            {activeTab === 0 && <Overview financialData={financialData} />}
-            {activeTab === 1 && <Statements financialData={financialData} />}
-          </>
-        )}
-      </Container>
+          {activeTab === 0 && <Overview financialData={financialData} />}
+          {activeTab === 1 && <Statements financialData={financialData} />}
+        </>
+      )}
 
       <Box
         sx={{
@@ -154,6 +154,17 @@ const App: React.FC = () => {
           initialMessage="Hi! My name is Stonkie, your stock agent. Feel free to ask me anything about a particular stock you are interested in."
         />
       </Box>
+    </Container>
+  );
+};
+
+// Refactored App component with Router
+const App: React.FC = () => {
+  return (
+    <ThemeProvider theme={theme}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
     </ThemeProvider>
   );
 };
