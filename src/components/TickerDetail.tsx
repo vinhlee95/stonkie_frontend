@@ -39,7 +39,7 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
       const reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow'];
       Promise.all(reportTypes.map(type => fetchFinancialData(ticker, type)));
     }
-  }, [financialData, fetchFinancialData, ticker]);
+  }, []);
 
   return (
     <Box sx={{ width: '100%' }}>
