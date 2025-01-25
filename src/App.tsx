@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, useSearchParams, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { FinancialData, ReportType } from './types';
 import {
   Alert,
@@ -7,8 +7,6 @@ import {
   Container,
   createTheme,
   ThemeProvider,
-  Tabs,
-  Tab,
 } from '@mui/material';
 import FinancialChatbox from './components/FinancialChatbox';
 import { 
@@ -24,10 +22,9 @@ import {
   BarController,
   LineController
 } from 'chart.js';
-import Overview from './components/Overview';
-import Statements from './components/Statements';
 import CompanySearch from './components/CompanySearch';
 import TickerDetail from './components/TickerDetail';
+import Home from './components/Home';
 
 // Register ChartJS components
 ChartJS.register(
@@ -168,41 +165,6 @@ const App: React.FC = () => {
         </Box>
       </Container>
     </ThemeProvider>
-  );
-};
-
-// Modify Home component to receive props
-const Home: React.FC<{
-  financialData: Record<ReportType, FinancialData | null>;
-}> = ({ financialData }) => {
-  const [activeTab, setActiveTab] = useState(0);
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
-  return (
-    <>
-      {(financialData.income_statement || financialData.balance_sheet || financialData.cash_flow) && (
-        <>
-          <Tabs 
-            value={activeTab} 
-            onChange={handleTabChange}
-            sx={{ 
-              borderBottom: 1, 
-              borderColor: 'divider',
-              mb: 3
-            }}
-          >
-            <Tab label="Overview" />
-            <Tab label="Statements" />
-          </Tabs>
-
-          {activeTab === 0 && <Overview financialData={financialData} />}
-          {activeTab === 1 && <Statements financialData={financialData} />}
-        </>
-      )}
-    </>
   );
 };
 
