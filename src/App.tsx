@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { FinancialData, ReportType } from './types';
 import {
   Alert,
@@ -52,6 +52,7 @@ const theme = createTheme({
 // Lift the state and handlers to App
 const App: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [financialData, setFinancialData] = useState<Record<ReportType, FinancialData | null>>({
     income_statement: null,
     balance_sheet: null,
@@ -112,6 +113,13 @@ const App: React.FC = () => {
     setSnackbarOpen(false);
   };
 
+  // Add effect to reset ticker when on home route
+  React.useEffect(() => {
+    if (location.pathname === '/') {
+      setTicker('');
+    }
+  }, [location.pathname]);
+
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -123,9 +131,7 @@ const App: React.FC = () => {
         />
 
         <Routes>
-          <Route path="/" element={<Home 
-            financialData={financialData}
-          />} />
+          <Route path="/" element={<Home />} />
           <Route 
             path="/tickers/:ticker/overview" 
             element={<TickerDetail 

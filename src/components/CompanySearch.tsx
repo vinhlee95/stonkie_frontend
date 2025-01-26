@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import { debounce } from 'lodash';
+import { Link } from 'react-router-dom';
 
 interface CompanySearchProps {
   ticker: string;
@@ -71,17 +72,19 @@ const CompanySearch: React.FC<CompanySearchProps> = ({
       gap: 2,
       width: '100%'
     }}>
-      <Box
-        component="img"
-        src="/stonkie.png" 
-        alt="Stonkie logo" 
-        sx={{ 
-          height: '60px',
-          '@media (max-width: 600px)': {
-            height: '40px'
-          }
-        }}
-      />
+      <Link to="/" style={{ textDecoration: 'none' }}>
+        <Box
+          component="img"
+          src="/stonkie.png" 
+          alt="Stonkie logo" 
+          sx={{ 
+            height: '60px',
+            '@media (max-width: 600px)': {
+              height: '40px'
+            }
+          }}
+        />
+      </Link>
       <Box component="form" onSubmit={onSubmit} sx={{ flexGrow: 1 }}>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Autocomplete
