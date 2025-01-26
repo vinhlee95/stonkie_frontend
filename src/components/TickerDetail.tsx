@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Overview from './Overview';
 import Statements from './Statements';
@@ -16,14 +16,7 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
   const { ticker } = useParams<{ ticker: string }>();
   const navigate = useNavigate();
   const [value, setValue] = useState(defaultTab);
-  
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  const isFetchingRef = useRef(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     if(newValue !== 'overview' && newValue !== 'statements') {
@@ -34,12 +27,36 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
     navigate(`/tickers/${ticker}/${newValue}`);
   };
 
+  // Fetch financial data if not already fetched
   useEffect(() => {
-    if (!financialData?.income_statement && !financialData?.balance_sheet && !financialData?.cash_flow && ticker) {
-      const reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow'];
-      Promise.all(reportTypes.map(type => fetchFinancialData(ticker, type)));
-    }
-  }, []);
+    const fetchData = async () => {
+      if (!financialData?.income_statement && 
+          !financialData?.balance_sheet && 
+          !financialData?.cash_flow && 
+          ticker && 
+          !isFetchingRef.current) {
+        try {
+          isFetchingRef.current = true;
+          const reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow'];
+          await Promise.all(reportTypes.map(type => fetchFinancialData(ticker, type)));
+        } catch (error) {
+          console.error('Error fetching financial data:', error);
+        } finally {
+          isFetchingRef.current = false;
+        }
+      }
+    };
+
+    fetchData();
+  }, [ticker, financialData, fetchFinancialData, loading]);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ width: '100%' }}>

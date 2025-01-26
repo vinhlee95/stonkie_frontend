@@ -62,6 +62,7 @@ const App: React.FC = () => {
 
   // Move these functions from Home to App
   const fetchFinancialData = async (ticker: string, reportType: ReportType) => {
+    setLoading(true);
     try {
       const response = await fetch(
         `${BACKEND_URL}/api/financial-data/${ticker.toLowerCase()}/${reportType}`
@@ -87,6 +88,8 @@ const App: React.FC = () => {
         throw new Error(`Error fetching ${reportType.replace(/_/g, ' ')}: ${err.message}`);
       }
       throw new Error(`Unexpected error fetching ${reportType.replace(/_/g, ' ')}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,16 +97,12 @@ const App: React.FC = () => {
     e.preventDefault();
     if (!ticker.trim()) return;
 
-    setLoading(true);
     setError(null);
-
     try {
       const reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow'];
       await Promise.all(reportTypes.map(type => fetchFinancialData(ticker, type)));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
     }
   };
 
