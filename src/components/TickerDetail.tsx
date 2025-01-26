@@ -10,9 +10,10 @@ interface TickerDetailProps {
   fetchFinancialData: (ticker: string, reportTypes?: ReportType[]) => Promise<any>;
   financialData: Record<ReportType, FinancialData | null>;
   loading: boolean;
+  error: string | null;
 }
 
-const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, fetchFinancialData, loading }) => {
+const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, fetchFinancialData, loading, error }) => {
   const { ticker } = useParams<{ ticker: string }>();
   const navigate = useNavigate();
   const [value, setValue] = useState(defaultTab);
@@ -33,10 +34,9 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
       if (!financialData?.income_statement && 
           !financialData?.balance_sheet && 
           !financialData?.cash_flow && 
-          ticker && 
+          ticker && !error && 
           !isFetchingRef.current) {
         try {
-          console.log('fetching data', isFetchingRef.current)
           isFetchingRef.current = true;
           await fetchFinancialData(ticker);
         } catch (error) {
@@ -48,7 +48,7 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
     };
 
     fetchData();
-  }, [ticker, financialData, fetchFinancialData]);
+  }, [ticker, financialData, fetchFinancialData, error]);
 
   if (loading) {
     return (

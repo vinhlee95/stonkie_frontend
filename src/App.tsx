@@ -88,7 +88,6 @@ const App: React.FC = () => {
       setError("Fetching available data is not available right now");
       setSnackbarOpen(true);
     } finally {
-      console.log('setting loading to false')
       setLoading(false);
     }
   };
@@ -134,6 +133,7 @@ const App: React.FC = () => {
               financialData={financialData}
               fetchFinancialData={fetchFinancialData}
               loading={loading}
+              error={error}
             />} 
           />
           <Route 
@@ -143,6 +143,7 @@ const App: React.FC = () => {
               financialData={financialData}
               fetchFinancialData={fetchFinancialData}
               loading={loading}
+              error={error}
             />} 
           />
         </Routes>
