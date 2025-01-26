@@ -36,6 +36,7 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
           ticker && 
           !isFetchingRef.current) {
         try {
+          console.log('fetching data', isFetchingRef.current)
           isFetchingRef.current = true;
           await fetchFinancialData(ticker);
         } catch (error) {
@@ -47,7 +48,7 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
     };
 
     fetchData();
-  }, [ticker, financialData, fetchFinancialData, loading]);
+  }, [ticker, financialData, fetchFinancialData]);
 
   if (loading) {
     return (

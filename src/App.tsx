@@ -7,6 +7,7 @@ import {
   Container,
   createTheme,
   ThemeProvider,
+  Snackbar,
 } from '@mui/material';
 import FinancialChatbox from './components/FinancialChatbox';
 import { 
@@ -59,6 +60,7 @@ const App: React.FC = () => {
   const [ticker, setTicker] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
 
   // Move these functions from Home to App
   const fetchFinancialData = async (ticker: string, reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow']) => {
@@ -83,8 +85,10 @@ const App: React.FC = () => {
       setFinancialData(mergedData);
       navigate(`/tickers/${ticker.toLowerCase()}/overview`);
     } catch (err) {
-      // TODO: Handle error
+      setError("Fetching available data is not available right now");
+      setSnackbarOpen(true);
     } finally {
+      console.log('setting loading to false')
       setLoading(false);
     }
   };
@@ -105,6 +109,10 @@ const App: React.FC = () => {
     setTicker(newTicker);
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -114,12 +122,6 @@ const App: React.FC = () => {
           onTickerChange={handleTickerChange}
           onSubmit={handleSubmit}
         />
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 4 }}>
-            {error}
-          </Alert>
-        )}
 
         <Routes>
           <Route path="/" element={<Home 
@@ -161,6 +163,21 @@ const App: React.FC = () => {
             initialMessage="Hi! My name is Stonkie, your stock agent. Feel free to ask me anything about a particular stock you are interested in."
           />
         </Box>
+
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={2500}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert 
+            onClose={handleSnackbarClose} 
+            severity="error" 
+            sx={{ width: '100%' }}
+          >
+            {error}
+          </Alert>
+        </Snackbar>
       </Container>
     </ThemeProvider>
   );
