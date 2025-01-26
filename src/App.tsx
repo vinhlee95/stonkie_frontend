@@ -83,7 +83,6 @@ const App: React.FC = () => {
       }), {}) as Record<ReportType, FinancialData | null>;
 
       setFinancialData(mergedData);
-      navigate(`/tickers/${ticker.toLowerCase()}/overview`);
     } catch (err) {
       setError("Fetching available data is not available right now");
       setSnackbarOpen(true);
@@ -99,6 +98,7 @@ const App: React.FC = () => {
     setError(null);
     try {
       await fetchFinancialData(ticker);
+      navigate(`/tickers/${ticker.toLowerCase()}/overview`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
