@@ -61,33 +61,29 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Move these functions from Home to App
-  const fetchFinancialData = async (ticker: string, reportType: ReportType) => {
+  const fetchFinancialData = async (ticker: string, reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow']) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${BACKEND_URL}/api/financial-data/${ticker.toLowerCase()}/${reportType}`
-      );
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error(`No ${reportType.replace(/_/g, ' ')} data found for ${ticker}`);
+      const data = await Promise.all(reportTypes.map(async type => {
+        const res = await fetch(
+          `${BACKEND_URL}/api/financial-data/${ticker.toLowerCase()}/${type}`
+        )
+        
+        return {
+          [type]: await res.json()
         }
-        throw new Error(`Failed to fetch ${reportType.replace(/_/g, ' ')} data (${response.status})`);
-      }
-
-      const data = await response.json();
-      setFinancialData(prev => ({
-        ...prev,
-        [reportType]: data
       }));
-      
-      // Use navigate instead of navigator
+
+      // Transform array of objects into single object
+      const mergedData = data.reduce((acc, curr) => ({
+        ...acc,
+        ...curr
+      }), {}) as Record<ReportType, FinancialData | null>;
+
+      setFinancialData(mergedData);
       navigate(`/tickers/${ticker.toLowerCase()}/overview`);
     } catch (err) {
-      if (err instanceof Error) {
-        throw new Error(`Error fetching ${reportType.replace(/_/g, ' ')}: ${err.message}`);
-      }
-      throw new Error(`Unexpected error fetching ${reportType.replace(/_/g, ' ')}`);
+      // TODO: Handle error
     } finally {
       setLoading(false);
     }
@@ -99,8 +95,7 @@ const App: React.FC = () => {
 
     setError(null);
     try {
-      const reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow'];
-      await Promise.all(reportTypes.map(type => fetchFinancialData(ticker, type)));
+      await fetchFinancialData(ticker);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }

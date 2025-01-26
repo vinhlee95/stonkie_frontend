@@ -7,7 +7,7 @@ import { FinancialData, ReportType } from '../types';
 
 interface TickerDetailProps {
   defaultTab: 'overview' | 'statements';
-  fetchFinancialData: (ticker: string, reportType: ReportType) => Promise<any>;
+  fetchFinancialData: (ticker: string, reportTypes?: ReportType[]) => Promise<any>;
   financialData: Record<ReportType, FinancialData | null>;
   loading: boolean;
 }
@@ -37,8 +37,7 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
           !isFetchingRef.current) {
         try {
           isFetchingRef.current = true;
-          const reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow'];
-          await Promise.all(reportTypes.map(type => fetchFinancialData(ticker, type)));
+          await fetchFinancialData(ticker);
         } catch (error) {
           console.error('Error fetching financial data:', error);
         } finally {
