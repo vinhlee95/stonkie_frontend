@@ -134,6 +134,7 @@ const App: React.FC = () => {
               fetchFinancialData={fetchFinancialData}
               loading={loading}
               error={error}
+              setCurrentTicker={setTicker}
             />} 
           />
           <Route 
@@ -144,6 +145,7 @@ const App: React.FC = () => {
               fetchFinancialData={fetchFinancialData}
               loading={loading}
               error={error}
+              setCurrentTicker={setTicker}
             />} 
           />
         </Routes>
