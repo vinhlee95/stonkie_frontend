@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Grid, Card, CardContent, Typography, Container } from '@mui/material';
 import { Link } from 'react-router-dom';
 
@@ -11,19 +11,25 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
 
 const Home: React.FC = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
+  const fetchDataRef = useRef<boolean>(false);
 
   useEffect(() => {
     const fetchMostViewed = async () => {
       try {
+        fetchDataRef.current = true;
         const response = await fetch(`${BACKEND_URL}/api/companies/most-viewed`);
         const data = await response.json();
         setCompanies(data.data);
       } catch (error) {
         console.error('Error fetching most viewed companies:', error);
+      } finally {
+        fetchDataRef.current = false;
       }
     };
 
-    fetchMostViewed();
+    if(companies.length === 0 && !fetchDataRef.current) {
+      fetchMostViewed();
+    }
   }, []);
 
   return (
