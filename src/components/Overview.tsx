@@ -226,6 +226,110 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
     );
   };
 
+  const renderDebtCoverageChart = (balanceSheet: FinancialData | null, cashFlow: FinancialData | null) => {
+    if (!balanceSheet || !cashFlow) return null;
+    
+    const totalDebt = balanceSheet.data.find(row => {
+      const metric = row[balanceSheet.columns[0]];
+      return typeof metric === 'string' && 
+        metric.toLowerCase().includes('total debt');
+    });
+
+    const cashAndEquivalents = balanceSheet.data.find(row => {
+      const metric = row[balanceSheet.columns[0]];
+      return typeof metric === 'string' && 
+        metric.toLowerCase().includes('cash and cash equivalents');
+    });
+
+    const freeCashFlow = cashFlow.data.find(row => {
+      const metric = row[cashFlow.columns[0]];
+      return typeof metric === 'string' && 
+        metric.toLowerCase().includes('free cash flow');
+    });
+
+    if (!totalDebt || !cashAndEquivalents || !freeCashFlow) return null;
+
+    // Use the same column reversal logic as the main chart
+    const years = balanceSheet.columns.slice(1).reverse();
+
+    const chartData = {
+      labels: years,
+      datasets: [
+        {
+          type: 'bar' as const,
+          label: 'Total Debt',
+          data: years.map(year => {
+            if(!totalDebt[year]) return 0;
+            return parseFloat(totalDebt[year].toString().replace(/[^0-9.-]+/g, ''));
+          }),
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1,
+        },
+        {
+          type: 'bar' as const,
+          label: 'Free Cash Flow',
+          data: years.map(year => {
+            if(!freeCashFlow[year]) return 0;
+            return parseFloat(freeCashFlow[year].toString().replace(/[^0-9.-]+/g, ''));
+          }),
+          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        },
+        {
+          type: 'bar' as const,
+          label: 'Cash and Cash Equivalents',
+          data: years.map(year => {
+            if(!cashAndEquivalents[year]) return 0;
+            return parseFloat(cashAndEquivalents[year].toString().replace(/[^0-9.-]+/g, ''));
+          }),
+          backgroundColor: 'rgba(153, 102, 255, 0.5)',
+          borderColor: 'rgba(153, 102, 255, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top' as const,
+        },
+        title: {
+          display: true,
+          text: 'Debt and Coverage',
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value: any): string {
+              if (typeof value !== 'number') return '';
+              return value >= 1e9 
+                ? `$${(value / 1e9).toFixed(1)}B`
+                : value >= 1e6
+                ? `$${(value / 1e6).toFixed(1)}M`
+                : `$${value}`;
+            },
+          },
+        },
+      },
+    };
+
+    return (
+      <Box sx={{ height: 400, mt: 4 }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Debt and Coverage
+        </Typography>
+        <Chart type='bar' data={chartData} options={options} />
+      </Box>
+    );
+  };
+
   return (
     <Grid container spacing={4}>
       <Grid item xs={12} md={6}>
@@ -233,6 +337,9 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
       </Grid>
       <Grid item xs={12} md={6}>
         {renderEPSChart(financialData.income_statement)}
+      </Grid>
+      <Grid item xs={12} md={6}>
+        {renderDebtCoverageChart(financialData.balance_sheet, financialData.cash_flow)}
       </Grid>
     </Grid>
   );
