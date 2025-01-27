@@ -170,7 +170,10 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         {
           type: 'bar' as const,
           label: 'Basic EPS',
-          data: years.map(year => parseFloat(basicEPS[year].toString().replace(/[^0-9.-]+/g, ''))),
+          data: years.map(year => {
+            if(!basicEPS[year]) return 0
+            return parseFloat(basicEPS[year].toString().replace(/[^0-9.-]+/g, ''))
+          }),
           backgroundColor: 'rgba(255, 99, 132, 0.5)',
           borderColor: 'rgba(255, 99, 132, 1)',
           borderWidth: 1,
@@ -178,7 +181,10 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         {
           type: 'bar' as const,
           label: 'Diluted EPS',
-          data: years.map(year => parseFloat(dilutedEPS[year].toString().replace(/[^0-9.-]+/g, ''))),
+          data: years.map(year => {
+            if(!dilutedEPS[year]) return 0
+            return parseFloat(dilutedEPS[year].toString().replace(/[^0-9.-]+/g, ''))
+          }),
           backgroundColor: 'rgba(153, 102, 255, 0.5)',
           borderColor: 'rgba(153, 102, 255, 1)',
           borderWidth: 1,
