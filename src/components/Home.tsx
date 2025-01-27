@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Grid, Card, CardContent, Typography, Container } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 interface Company {
   name: string;
@@ -25,21 +27,39 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {companies.map((company, index) => (
-        <div 
-          key={index}
-          className="p-4 bg-gray-800 rounded-lg shadow-lg"
-        >
-          <div className="flex items-center gap-3">
-            <div>
-              <h3 className="text-lg font-semibold">{company.name}</h3>
-              <p className="text-gray-400">{company.ticker}</p>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Grid container spacing={3}>
+        {companies.map((company, index) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+            <Link 
+              to={`/tickers/${company.ticker.toLowerCase()}/overview`} 
+              style={{ textDecoration: 'none' }}
+            >
+              <Card 
+                sx={{ 
+                  borderRadius: 2,
+                  bgcolor: 'grey.800',
+                  boxShadow: 3,
+                  transition: 'background-color 0.3s ease-in-out',
+                  '&:hover': {
+                    bgcolor: 'grey.700',
+                  }
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h6" component="h3" sx={{ color: 'white' }}>
+                    {company.name}
+                  </Typography>
+                  <Typography sx={{ color: 'grey.400' }}>
+                    {company.ticker}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Link>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
   );
 };
 
