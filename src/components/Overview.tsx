@@ -235,10 +235,16 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         metric.toLowerCase().includes('total debt');
     });
 
-    const cashAndEquivalents = balanceSheet.data.find(row => {
+    const cash = balanceSheet.data.find(row => {
       const metric = row[balanceSheet.columns[0]];
       return typeof metric === 'string' && 
-        metric.toLowerCase().includes('cash and cash equivalents');
+        metric.toLowerCase() === 'cash';
+    });
+
+    const cashEquivalents = balanceSheet.data.find(row => {
+      const metric = row[balanceSheet.columns[0]];
+      return typeof metric === 'string' && 
+        metric.toLowerCase() === 'cash equivalents';
     });
 
     const freeCashFlow = cashFlow.data.find(row => {
@@ -247,7 +253,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         metric.toLowerCase().includes('free cash flow');
     });
 
-    if (!totalDebt || !cashAndEquivalents || !freeCashFlow) return null;
+    if (!totalDebt || !cash || !cashEquivalents || !freeCashFlow) return null;
 
     // Use the same column reversal logic as the main chart
     const years = balanceSheet.columns.slice(1).reverse();
@@ -281,8 +287,10 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
           type: 'bar' as const,
           label: 'Cash and Cash Equivalents',
           data: years.map(year => {
-            if(!cashAndEquivalents[year]) return 0;
-            return parseFloat(cashAndEquivalents[year].toString().replace(/[^0-9.-]+/g, ''));
+            if(!cash[year] || !cashEquivalents[year]) return 0;
+            const cashValue = parseFloat(cash[year].toString().replace(/[^0-9.-]+/g, ''));
+            const equivalentsValue = parseFloat(cashEquivalents[year].toString().replace(/[^0-9.-]+/g, ''));
+            return cashValue + equivalentsValue;
           }),
           backgroundColor: 'rgba(153, 102, 255, 0.5)',
           borderColor: 'rgba(153, 102, 255, 1)',
