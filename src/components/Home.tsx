@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Grid, Card, CardContent, Typography, Container } from '@mui/material';
+import { Grid, Card, CardContent, Typography, Container, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 interface Company {
@@ -12,17 +12,21 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
 const Home: React.FC = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const fetchDataRef = useRef<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const fetchMostViewed = async () => {
       try {
         fetchDataRef.current = true;
+        setLoading(true);
+        
         const response = await fetch(`${BACKEND_URL}/api/companies/most-viewed`);
         const data = await response.json();
         setCompanies(data.data);
       } catch (error) {
         console.error('Error fetching most viewed companies:', error);
       } finally {
+        setLoading(false);
         fetchDataRef.current = false;
       }
     };
@@ -31,6 +35,10 @@ const Home: React.FC = () => {
       fetchMostViewed();
     }
   }, []);
+
+  if(loading) {
+    return <Container sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress /></Container>;
+  }
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
