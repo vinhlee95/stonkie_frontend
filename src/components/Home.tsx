@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 interface Company {
   name: string;
   ticker: string;
+  logo_url: string;
 }
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
@@ -60,13 +61,25 @@ const Home: React.FC = () => {
                   }
                 }}
               >
-                <CardContent>
-                  <Typography variant="h6" component="h3" sx={{ color: 'white' }}>
-                    {company.name}
-                  </Typography>
-                  <Typography sx={{ color: 'grey.400' }}>
-                    {company.ticker}
-                  </Typography>
+                <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <img 
+                    src={company.logo_url} 
+                    alt={`${company.name} logo`}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                  <div>
+                    <Typography variant="h6" component="h3" sx={{ color: 'white' }}>
+                      {company.name}
+                    </Typography>
+                    <Typography sx={{ color: 'grey.400' }}>
+                      {company.ticker}
+                    </Typography>
+                  </div>
                 </CardContent>
               </Card>
             </Link>
