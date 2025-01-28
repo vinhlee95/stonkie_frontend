@@ -51,7 +51,23 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
     fetchData();
   }, [ticker, financialData, fetchFinancialData, error]);
 
-  // Add this new useEffect to update the parent's state when ticker changes
+  useEffect(() => {
+    const refetchData = async () => {
+      if(ticker && !isFetchingRef.current) {
+        try {
+          isFetchingRef.current = true;
+          await fetchFinancialData(ticker)
+        } catch (error) {
+          console.error('Error fetching financial data:', error);
+        } finally {
+          isFetchingRef.current = false;
+        }
+      }
+    }
+
+    refetchData()
+  }, [ticker]);
+
   useEffect(() => {
     if (ticker) {
       setCurrentTicker(ticker.toUpperCase());
