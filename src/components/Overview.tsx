@@ -247,13 +247,19 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         metric.toLowerCase() === 'cash equivalents';
     });
 
+    const cashAndCashEquivalents = balanceSheet.data.find(row => {
+      const metric = row[balanceSheet.columns[0]];
+      return typeof metric === 'string' && 
+        metric.toLowerCase().includes('cash and cash');
+    });
+
     const freeCashFlow = cashFlow.data.find(row => {
       const metric = row[cashFlow.columns[0]];
       return typeof metric === 'string' && 
         metric.toLowerCase().includes('free cash flow');
     });
 
-    if (!totalDebt || !cash || !cashEquivalents || !freeCashFlow) return null;
+    if (!totalDebt || !freeCashFlow) return null;
 
     // Use the same column reversal logic as the main chart
     const years = balanceSheet.columns.slice(1).reverse();
@@ -287,10 +293,17 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
           type: 'bar' as const,
           label: 'Cash and Cash Equivalents',
           data: years.map(year => {
-            if(!cash[year] || !cashEquivalents[year]) return 0;
-            const cashValue = parseFloat(cash[year].toString().replace(/[^0-9.-]+/g, ''));
-            const equivalentsValue = parseFloat(cashEquivalents[year].toString().replace(/[^0-9.-]+/g, ''));
-            return cashValue + equivalentsValue;
+            if(!cash && !cashEquivalents && !cashAndCashEquivalents) return 0;
+            // Render from breakdowns
+            if(cash && cashEquivalents) {
+              const cashValue = parseFloat(cash[year].toString().replace(/[^0-9.-]+/g, ''));
+              const equivalentsValue = parseFloat(cashEquivalents[year].toString().replace(/[^0-9.-]+/g, ''));
+              return cashValue + equivalentsValue;
+            }
+
+            // Fallback - render from 'cash and cash equivalents'
+            if(!cashAndCashEquivalents || !cashAndCashEquivalents[year]) return 0;
+            return parseFloat(cashAndCashEquivalents[year].toString().replace(/[^0-9.-]+/g, ''));
           }),
           backgroundColor: 'rgba(153, 102, 255, 0.5)',
           borderColor: 'rgba(153, 102, 255, 1)',
