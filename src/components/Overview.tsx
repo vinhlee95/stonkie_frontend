@@ -296,6 +296,8 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
             if(!cash && !cashEquivalents && !cashAndCashEquivalents) return 0;
             // Render from breakdowns
             if(cash && cashEquivalents) {
+              if(!cash[year] || !cashEquivalents[year]) return 0;
+              
               const cashValue = parseFloat(cash[year].toString().replace(/[^0-9.-]+/g, ''));
               const equivalentsValue = parseFloat(cashEquivalents[year].toString().replace(/[^0-9.-]+/g, ''));
               return cashValue + equivalentsValue;
