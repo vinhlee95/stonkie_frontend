@@ -11,6 +11,7 @@ interface Message {
   content: string;
   isFAQ?: boolean;  // Add this field to distinguish FAQ messages
   suggestions?: string[];  // Add this field for FAQ suggestions
+  isStreaming?: boolean;  // Add this field to handle streaming messages
 }
 
 interface FinancialChatboxProps {
@@ -63,6 +64,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
   const [isFAQLoading, setIsFAQLoading] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const theme = useTheme();
+  const [streamingMessage, setStreamingMessage] = useState<string[]>([]);
 
   const handleFAQClick = async (question: string) => {
     setInput(question);
@@ -156,10 +158,99 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
     }
   };
 
+  const fetchFAQsStream = async() => {
+    setIsFAQLoading(true);
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/company/faq/?ticker=${ticker}&stream=true`);
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        throw new Error('Failed to get reader');
+      }
+      
+      const questions: string[] = [];
+      let hasAddedInitialStatus = false;
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const {value, done} = await reader.read();
+        if (done) break;
+        
+        const lines = decoder.decode(value).split('\n');
+        
+        for (const line of lines) {
+          if (line.trim()) {
+            const jsonString = line.replace(/^data: /, '');
+            const data = JSON.parse(jsonString);
+            switch (data.type) {
+              case 'question':
+                questions.push(data.text);
+                // Update or create FAQ message
+                setMessages(prev => {
+                  const newMessages = [...prev];
+                  const faqMessage = newMessages.find(m => m.isFAQ);
+                  if (faqMessage) {
+                    faqMessage.suggestions = questions;
+                  } else {
+                    newMessages.push({
+                      type: 'bot',
+                      content: "Here are some general frequently asked questions:",
+                      isFAQ: true,
+                      suggestions: questions
+                    });
+                  }
+                  return newMessages;
+                });
+                break;
+              case 'status':
+                if (!hasAddedInitialStatus) {
+                  // Add first status message as a separate chat message
+                  setMessages(prev => [...prev, {
+                    type: 'bot',
+                    content: data.message
+                  }]);
+                  hasAddedInitialStatus = true;
+                }
+                break;
+              case 'error':
+                console.error('Error:', data.message);
+                break;
+            }
+          }
+        }
+      }
+
+      // Update the FAQ message when stream is complete
+      setMessages(prev => {
+        const newMessages = [...prev];
+        const faqMessage = newMessages.find(m => m.isFAQ);
+        if (faqMessage) {
+          faqMessage.content = "Here are some general frequently asked questions:";
+          faqMessage.suggestions = questions;
+        }
+        return newMessages;
+      });
+    } catch (error) {
+      console.error('Error fetching FAQs:', error);
+      // Add error message if stream fails
+      setMessages(prev => [...prev, {
+        type: 'bot',
+        content: "Sorry, I encountered an error generating questions.",
+        isFAQ: true,
+        suggestions: []
+      }]);
+    } finally {
+      setIsFAQLoading(false);
+    }
+  };
+
   const handleChatOpen = () => {
     setIsVisible(true);
     if (!hasFetchedFAQs) {
-      fetchFAQs();
+      // fetchFAQs();
+      fetchFAQsStream();
       setHasFetchedFAQs(true);
     }
   };
