@@ -162,7 +162,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
     setIsFAQLoading(true);
     
     try {
-      const response = await fetch(`${BACKEND_URL}/api/company/faq/?ticker=${ticker}&stream=true`);
+      const response = await fetch(`${BACKEND_URL}/api/company/faq?ticker=${ticker}&stream=true`);
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       
