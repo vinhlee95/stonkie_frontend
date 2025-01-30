@@ -135,29 +135,6 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
     }
   }, [messages]);
 
-  const fetchFAQs = async () => {
-    setIsFAQLoading(true);
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/company/faq?ticker=${ticker}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch FAQs');
-      }
-      const faqData = await response.json();
-      
-      // Add FAQ message to chat
-      setMessages(prev => [...prev, {
-        type: 'bot',
-        content: "Here are some general frequently asked questions:",
-        isFAQ: true,
-        suggestions: faqData.data || []
-      }]);
-    } catch (error) {
-      console.error('Error fetching FAQs:', error);
-    } finally {
-      setIsFAQLoading(false);
-    }
-  };
-
   const fetchFAQsStream = async() => {
     setIsFAQLoading(true);
     
