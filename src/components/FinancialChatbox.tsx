@@ -112,29 +112,25 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
       setMessages(prev => [...prev, streamingMessage]);
 
       // Read the stream
+      let accumulatedContent = '';
       // eslint-disable-next-line no-constant-condition
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
 
-        const lines: string[] = decoder.decode(value).split('\n');
+        const chunk = decoder.decode(value);
+        accumulatedContent += chunk;
 
-        for (const line of lines) {
-          if (line.trim()) {
-            const data = line;
+        // Update the streaming message content with the full accumulated content
+        setMessages(prev => {
+          const newMessages = [...prev];
+          const lastMessage = newMessages[newMessages.length - 1];
 
-            // Update the streaming message content
-            setMessages(prev => {
-              const newMessages = [...prev];
-              const lastMessage = newMessages[newMessages.length - 1];
-
-              if (lastMessage.isStreaming) {
-                lastMessage.content += data;
-              }
-              return newMessages;
-            });
+          if (lastMessage.isStreaming) {
+            lastMessage.content = accumulatedContent;
           }
-        }
+          return newMessages;
+        });
       }
 
       // Mark message as no longer streaming once complete
