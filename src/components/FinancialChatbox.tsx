@@ -216,7 +216,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
                   } else {
                     newMessages.push({
                       type: 'bot',
-                      content: "Here are some general frequently asked questions:",
+                      content: "",
                       isFAQ: true,
                       suggestions: questions
                     });
@@ -247,7 +247,6 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
         const newMessages = [...prev];
         const faqMessage = newMessages.find(m => m.isFAQ);
         if (faqMessage) {
-          faqMessage.content = "Here are some general frequently asked questions:";
           faqMessage.suggestions = questions;
         }
         return newMessages;
@@ -269,7 +268,6 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
   const handleChatOpen = () => {
     setIsVisible(true);
     if (!hasFetchedFAQs) {
-      // fetchFAQs();
       fetchFAQsStream();
       setHasFetchedFAQs(true);
     }
