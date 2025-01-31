@@ -96,19 +96,62 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
         throw new Error('Failed to get analysis');
       }
 
-      const responseData = await response.json();
-      
-      // Add bot response to chat - now accessing nested data structure
-      const botMessage: Message = { 
-        type: 'bot', 
-        content: responseData.data.data || responseData.data 
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('Failed to get reader');
+      }
+
+      // Add initial streaming message
+      const streamingMessage: Message = {
+        type: 'bot',
+        content: '',
+        isStreaming: true
       };
-      setMessages(prev => [...prev, botMessage]);
+      setMessages(prev => [...prev, streamingMessage]);
+
+      // Read the stream
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        const lines: string[] = decoder.decode(value).split('\n');
+
+        for (const line of lines) {
+          if (line.trim()) {
+            const data = line;
+
+            // Update the streaming message content
+            setMessages(prev => {
+              const newMessages = [...prev];
+              const lastMessage = newMessages[newMessages.length - 1];
+
+              if (lastMessage.isStreaming) {
+                lastMessage.content += data;
+              }
+              return newMessages;
+            });
+          }
+        }
+      }
+
+      // Mark message as no longer streaming once complete
+      setMessages(prev => {
+        const newMessages = [...prev];
+        const lastMessage = newMessages[newMessages.length - 1];
+        if (lastMessage.isStreaming) {
+          lastMessage.isStreaming = false;
+        }
+        return newMessages;
+      });
+
     } catch (error) {
       // Add error message to chat
-      const errorMessage: Message = { 
-        type: 'bot', 
-        content: 'Sorry, I encountered an error analyzing the data.' 
+      const errorMessage: Message = {
+        type: 'bot',
+        content: 'Sorry, I encountered an error analyzing the data.'
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
