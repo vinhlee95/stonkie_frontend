@@ -4,6 +4,7 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import SendIcon from '@mui/icons-material/Send';
 import ReactMarkdown from 'react-markdown';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useTheme } from '@mui/material/styles';
 
 interface Message {
@@ -553,8 +554,16 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
             <div ref={messagesEndRef} />
           </Box>
 
-          <form onSubmit={(e) => handleSubmit(e)} style={{ marginBottom: '12px' }}>
-            <Box sx={{ px: { xs: 4, sm: 0 } }}>
+          <form onSubmit={(e) => handleSubmit(e)} style={{ 
+            marginBottom: '12px',
+            position: 'absolute',
+            bottom: 32,
+            left: 0,
+            right: 0,
+            paddingLeft: '32px',
+            paddingRight: '32px'
+          }}>
+            <Box>
               <TextField
                 fullWidth
                 value={input}
@@ -564,8 +573,8 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
                 size="small"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: 3,
-                    pr: '8px',
+                    borderRadius: 6,
+                    pr: '18px',
                     '& input': {
                       py: 1.5
                     }
@@ -578,14 +587,23 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
                         type="submit" 
                         disabled={isLoading || !input.trim()}
                         sx={{
-                          minWidth: '40px',
-                          width: '40px',
-                          height: '40px',
+                          minWidth: '30px',
+                          width: '30px',
+                          height: '30px',
                           borderRadius: '50%',
                           p: 0,
+                          backgroundColor: 'primary.main',
+                          color: 'white',
+                          '&:hover': {
+                            backgroundColor: 'primary.dark'
+                          },
+                          '&:disabled': {
+                            backgroundColor: 'grey.300',
+                            color: 'grey.500'
+                          }
                         }}
                       >
-                        <SendIcon fontSize="small" />
+                        <KeyboardArrowUpIcon fontSize="small" />
                       </Button>
                     </InputAdornment>
                   ),
