@@ -153,6 +153,11 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
     }
   };
 
+  // Add this useEffect to scroll to bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
