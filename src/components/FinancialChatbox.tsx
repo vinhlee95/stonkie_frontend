@@ -544,56 +544,6 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
                 />
               </Box>
             ))}
-            {(isLoading || isFAQLoading) && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                  mb: 2,
-                  position: 'relative',
-                  alignItems: 'flex-start',
-                }}
-              >
-                <Box
-                  component="img"
-                  src="/stonkie.png"
-                  alt="AI Avatar"
-                  sx={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: '50%',
-                    mr: 2,
-                    flexShrink: 0,
-                  }}
-                />
-                <Paper
-                  sx={{
-                    p: 1.5,
-                    maxWidth: '85%',
-                    bgcolor: 'grey.50',
-                    color: 'text.primary',
-                    borderRadius: 2,
-                    boxShadow: 2,
-                    position: 'relative',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      width: 0,
-                      height: 0,
-                      borderStyle: 'solid',
-                      left: -8,
-                      borderWidth: '8px 10px 8px 0',
-                      borderColor: 'transparent #f5f5f5 transparent transparent',
-                      top: 10,
-                      filter: 'drop-shadow(-2px 1px 1px rgba(0,0,0,0.15))',
-                      zIndex: 1,
-                    }
-                  }}
-                >
-                  <LoadingMessage />
-                </Paper>
-              </Box>
-            )}
             <div ref={messagesEndRef} />
           </Box>
 
