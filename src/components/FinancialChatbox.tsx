@@ -16,7 +16,6 @@ interface Message {
 
 interface FinancialChatboxProps {
   ticker: string;  // Current ticker passed from parent component
-  initialMessage: string;  // Add this new prop
 }
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
@@ -49,13 +48,8 @@ const LoadingMessage = () => (
   </Box>
 );
 
-const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMessage }) => {
-  const [messages, setMessages] = useState<Message[]>(() => [
-    { 
-      type: 'bot', 
-      content: initialMessage 
-    }
-  ]);
+const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -63,17 +57,11 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
   const [hasFetchedFAQs, setHasFetchedFAQs] = useState(false);
   const [isFAQLoading, setIsFAQLoading] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
-  const theme = useTheme();
 
   useEffect(() => {
-    setMessages([
-      { 
-        type: 'bot', 
-        content: initialMessage 
-      }
-    ]);
+    setMessages([]);
     setHasFetchedFAQs(false);
-  }, [ticker, initialMessage]);
+  }, [ticker]);
 
   const handleFAQClick = async (question: string) => {
     setInput(question);
@@ -281,7 +269,19 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
   const MessageContent: React.FC<{ content: string, isUser: boolean, isFAQ?: boolean, suggestions?: string[] }> = 
     ({ content, isUser, isFAQ, suggestions }) => {
     if (isUser) {
-      return <Typography>{content}</Typography>;
+      return (
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            fontSize: '1.75rem',
+            fontWeight: 500,
+            mb: 3,
+            color: 'text.primary'
+          }}
+        >
+          {content}
+        </Typography>
+      );
     }
 
     if (isFAQ && suggestions) {
@@ -317,75 +317,101 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
     }
     
     return (
-      <ReactMarkdown
-        components={{
-          h2: ({ children }) => (
-            <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 1, mb: 2 }}>
-              {children}
-            </Typography>
-          ),
-          p: ({ children }) => (
-            <Typography sx={{ mb: 1.5 }}>{children}</Typography>
-          ),
-          strong: ({ children }) => (
-            <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              {children}
-            </Typography>
-          ),
-          ul: ({ children }) => (
-            <Box component="ul" sx={{ pl: 2, mb: 1.5 }}>
-              {children}
-            </Box>
-          ),
-          li: ({ children }) => (
-            <Typography component="li" sx={{ mb: 0.5 }}>
-              {children}
-            </Typography>
-          ),
-          table: ({ children }) => (
-            <Box sx={{ overflowX: 'auto', mb: 2 }}>
-              <table style={{ 
-                borderCollapse: 'collapse', 
-                width: '100%',
-                fontSize: '0.875rem'
-              }}>
-                {children}
-              </table>
-            </Box>
-          ),
-          th: ({ children }) => (
-            <th style={{ 
-              border: '1px solid #ddd',
-              padding: '8px',
-              backgroundColor: '#f5f5f5',
-              textAlign: 'left'
-            }}>
-              {children}
-            </th>
-          ),
-          td: ({ children }) => (
-            <td style={{ 
-              border: '1px solid #ddd',
-              padding: '8px'
-            }}>
-              {children}
-            </td>
-          ),
-        }}
-      >
-        {content}
-      </ReactMarkdown>
+      <Box>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+          <Box
+            component="img"
+            src="/stonkie.png"
+            alt="Stonkie Avatar"
+            sx={{
+              width: 24,
+              height: 24,
+              borderRadius: '50%',
+              flexShrink: 0,
+            }}
+          />
+          <Typography 
+            sx={{ 
+              color: 'text.secondary',
+              mb: 1,
+              fontWeight: 'bold'
+            }}
+          >
+            Stonkie
+          </Typography>
+        </Box>
+        <Box>
+          <ReactMarkdown
+            components={{
+              h2: ({ children }) => (
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 1, mb: 2 }}>
+                  {children}
+                </Typography>
+              ),
+              p: ({ children }) => (
+                <Typography sx={{ mb: 1.5, color: 'text.primary' }}>{children}</Typography>
+              ),
+              strong: ({ children }) => (
+                <Typography component="span" sx={{ fontWeight: 'bold' }}>
+                  {children}
+                </Typography>
+              ),
+              ul: ({ children }) => (
+                <Box component="ul" sx={{ pl: 2, mb: 1.5 }}>
+                  {children}
+                </Box>
+              ),
+              li: ({ children }) => (
+                <Typography component="li" sx={{ mb: 0.5 }}>
+                  {children}
+                </Typography>
+              ),
+              table: ({ children }) => (
+                <Box sx={{ overflowX: 'auto', mb: 2 }}>
+                  <table style={{ 
+                    borderCollapse: 'collapse', 
+                    width: '100%',
+                    fontSize: '0.875rem'
+                  }}>
+                    {children}
+                  </table>
+                </Box>
+              ),
+              th: ({ children }) => (
+                <th style={{ 
+                  border: '1px solid #ddd',
+                  padding: '8px',
+                  backgroundColor: '#f5f5f5',
+                  textAlign: 'left'
+                }}>
+                  {children}
+                </th>
+              ),
+              td: ({ children }) => (
+                <td style={{ 
+                  border: '1px solid #ddd',
+                  padding: '8px'
+                }}>
+                  {children}
+                </td>
+              ),
+            }}
+          >
+            {content}
+          </ReactMarkdown>
+        </Box>
+      </Box>
     );
   };
 
   return (
     <Box sx={{ 
       position: 'fixed', 
-      bottom: { xs: 0, sm: 20 },  // Remove bottom margin on mobile
+      bottom: { xs: 0, sm: 20 },
       right: { xs: 0, sm: 20 },
       maxWidth: { xs: '100%', sm: '90%' },
-      width: { xs: '100%', sm: 600 },
-      px: { xs: 0, sm: 0 }  // Remove horizontal padding on mobile
+      width: { xs: '100%', sm: 800 },
+      px: { xs: 0, sm: 0 }
     }}>
       {!isVisible && (
         <Button 
@@ -397,8 +423,8 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
             height: 56,
             borderRadius: '50%',
             float: 'right',
-            mr: { xs: 4, sm: 0 },  // Add right margin (16px on mobile, 0 on desktop)
-            mb: { xs: 4, sm: 0 }   // Add bottom margin (16px on mobile, 0 on desktop)
+            mr: { xs: 4, sm: 0 },
+            mb: { xs: 4, sm: 0 }
           }}
         >
           <ChatBubbleIcon />
@@ -407,12 +433,11 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
       
       {isVisible && (
         <Paper elevation={3} sx={{ 
-          p: 2, 
+          p: 4,
           clear: 'both', 
           position: 'relative',
-          borderRadius: { xs: '16px 16px 0 0', sm: 4 }  // Rounded top corners only on mobile, all corners on desktop
+          borderRadius: { xs: '16px 16px 0 0', sm: 4 }
         }}>
-          {/* Header Section */}
           <Box sx={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
@@ -452,10 +477,10 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
               sm: '65vh'
             },
             overflowY: 'auto',
-            mt: 2,
+            mb: 3,
             position: 'relative',
-            mr: -2,  // Negative margin to extend to edge on all viewports
-            pr: 2,   // Padding to maintain content spacing on all viewports
+            mr: -2,
+            pr: 2,
             '&::-webkit-scrollbar': {
               width: '8px',
             },
@@ -504,58 +529,16 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
               <Box
                 key={index}
                 sx={{
-                  display: 'flex',
-                  justifyContent: message.type === 'user' ? 'flex-end' : 'flex-start',
-                  mb: 2,
+                  mb: 4,
                   position: 'relative',
-                  alignItems: 'flex-start',
                 }}
               >
-                {message.type === 'bot' && (
-                  <Box
-                    component="img"
-                    src="/stonkie.png"
-                    alt="AI Avatar"
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '50%',
-                      mr: 2,
-                      flexShrink: 0,
-                    }}
-                  />
-                )}
-                <Paper
-                  sx={{
-                    p: 1.5,
-                    maxWidth: message.type === 'user' ? '70%' : '85%',
-                    bgcolor: message.type === 'user' ? 'primary.light' : 'grey.50',
-                    color: message.type === 'user' ? 'white' : 'text.primary',
-                    borderRadius: 2,
-                    boxShadow: 2,
-                    position: 'relative',
-                    '&::before': message.type === 'bot' ? {
-                      content: '""',
-                      position: 'absolute',
-                      width: 0,
-                      height: 0,
-                      borderStyle: 'solid',
-                      left: -8,
-                      borderWidth: '8px 10px 8px 0',
-                      borderColor: `transparent ${theme.palette.grey[50]} transparent transparent`,
-                      top: 10,
-                      filter: 'drop-shadow(-2px 1px 1px rgba(0,0,0,0.15))',
-                      zIndex: 1,
-                    } : {}
-                  }}
-                >
-                  <MessageContent 
-                    content={message.content} 
-                    isUser={message.type === 'user'}
-                    isFAQ={message.isFAQ}
-                    suggestions={message.suggestions}
-                  />
-                </Paper>
+                <MessageContent 
+                  content={message.content} 
+                  isUser={message.type === 'user'}
+                  isFAQ={message.isFAQ}
+                  suggestions={message.suggestions}
+                />
               </Box>
             ))}
             {(isLoading || isFAQLoading) && (
@@ -622,9 +605,9 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
               sx={{
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 3,
-                  pr: '8px', // Reduce right padding to accommodate button
+                  pr: '8px',
                   '& input': {
-                    py: 1.5  // Add more vertical padding to the input (12px top and bottom)
+                    py: 1.5
                   }
                 }
               }}
