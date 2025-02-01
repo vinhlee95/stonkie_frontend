@@ -3,6 +3,7 @@ import { Box, Button, Paper, Typography } from '@mui/material';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import MessageContent from './ChatMessage/MessageContent';
 import ChatInput from './ChatInput';
+import LoadingInput from './LoadingInput';
 
 interface Message {
   type: 'user' | 'bot';
@@ -333,14 +334,18 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
             <div ref={messagesEndRef} />
           </Box>
 
-          <ChatInput
-            input={input}
-            isLoading={isLoading}
-            ticker={ticker}
-            messagesExist={messages.length > 0}
-            onInputChange={setInput}
-            onSubmit={handleSubmit}
-          />
+          {isLoading ? (
+            <LoadingInput />
+          ) : (
+            <ChatInput
+              input={input}
+              isLoading={isLoading}
+              ticker={ticker}
+              messagesExist={messages.length > 0}
+              onInputChange={setInput}
+              onSubmit={handleSubmit}
+            />
+          )}
         </Paper>
       )}
     </Box>
