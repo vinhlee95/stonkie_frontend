@@ -172,7 +172,6 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         height: 250,
         mt: 4,
         borderRadius: 2,
-        px: 3,
       }}>
         <Typography 
           variant="h5" 
@@ -293,7 +292,6 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         height: 250,
         mt: 2,
         borderRadius: 2,
-        px: 3,
       }}>
         <Typography 
           variant="h5" 
@@ -457,7 +455,6 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         height: 250,
         mt: 4,
         borderRadius: 2,
-        px: 3,
       }}>
         <Typography 
           variant="h5" 
