@@ -538,8 +538,8 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
                 size="small"
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: 3,
-                    pr: '18px',
+                    borderRadius: 8,
+                    pr: '14px',
                     backgroundColor: 'white',
                     '& input': {
                       py: 1.5
