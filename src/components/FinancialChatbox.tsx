@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Paper, Typography, InputAdornment } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import SendIcon from '@mui/icons-material/Send';
-import ReactMarkdown from 'react-markdown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { useTheme } from '@mui/material/styles';
-import AddIcon from '@mui/icons-material/Add';
+import MessageContent from './ChatMessage/MessageContent';
+import ChatInput from './ChatInput';
 
 interface Message {
   type: 'user' | 'bot';
@@ -21,41 +18,12 @@ interface FinancialChatboxProps {
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
 
-const LoadingMessage = () => (
-  <Box sx={{ display: 'flex', gap: 1 }}>
-    {[1, 2, 3].map((dot) => (
-      <Box
-        key={dot}
-        sx={{
-          width: 8,
-          height: 8,
-          backgroundColor: 'grey.400',
-          borderRadius: '50%',
-          animation: 'pulse 1.5s infinite',
-          animationDelay: `${(dot - 1) * 0.2}s`,
-          '@keyframes pulse': {
-            '0%, 100%': {
-              transform: 'scale(0.8)',
-              opacity: 0.5,
-            },
-            '50%': {
-              transform: 'scale(1.2)',
-              opacity: 1,
-            },
-          },
-        }}
-      />
-    ))}
-  </Box>
-);
-
 const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [hasFetchedFAQs, setHasFetchedFAQs] = useState(false);
-  const [isFAQLoading, setIsFAQLoading] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -173,9 +141,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
     }
   }, [messages]);  // Remove this useEffect
 
-  const fetchFAQsStream = async() => {
-    setIsFAQLoading(true);
-    
+  const fetchFAQsStream = async() => {    
     try {
       const response = await fetch(`${BACKEND_URL}/api/company/faq?ticker=${ticker}&stream=true`);
       const reader = response.body?.getReader();
@@ -255,8 +221,6 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
         isFAQ: true,
         suggestions: []
       }]);
-    } finally {
-      setIsFAQLoading(false);
     }
   };
 
@@ -266,165 +230,6 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
       fetchFAQsStream();
       setHasFetchedFAQs(true);
     }
-  };
-
-  const MessageContent: React.FC<{ content: string, isUser: boolean, isFAQ?: boolean, suggestions?: string[] }> = 
-    ({ content, isUser, isFAQ, suggestions }) => {
-    if (isUser) {
-      return (
-        <Typography 
-          variant="h4" 
-          sx={{ 
-            fontSize: '1.75rem',
-            fontWeight: 500,
-            mb: 3,
-            color: 'text.primary',
-            pt: 2,
-            borderTop: '1px solid',
-            borderColor: 'divider'
-          }}
-        >
-          {content}
-        </Typography>
-      );
-    }
-
-    if (isFAQ && suggestions) {
-      return (
-        <Box>
-          {content && <Typography sx={{ mb: 1 }}>{content}</Typography>}
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            {suggestions.map((suggestion, index) => (
-              <Box
-                key={index}
-                onClick={() => handleFAQClick(suggestion)}
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  py: 1.5,
-                  borderBottom: '1px solid',
-                  borderColor: 'divider',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: 'action.hover',
-                  }
-                }}
-              >
-                <Typography 
-                  sx={{ 
-                    color: 'text.primary',
-                    flex: 1,
-                    pr: 2
-                  }}
-                >
-                  {suggestion}
-                </Typography>
-                <AddIcon sx={{ color: 'primary.main' }} />
-              </Box>
-            ))}
-          </Box>
-        </Box>
-      );
-    }
-    
-    return (
-      <Box>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            backgroundColor: 'grey.100',
-            borderRadius: '16px',
-            padding: '4px 16px 4px 8px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            width: 'fit-content',
-            mb: 1.5
-          }}
-        >
-          <Box
-            component="img"
-            src="/stonkie.png"
-            alt="Stonkie Avatar"
-            sx={{
-              width: 24,
-              height: 24,
-              borderRadius: '50%',
-              flexShrink: 0,
-            }}
-          />
-          <Typography 
-            sx={{ 
-              color: 'text.secondary',
-              fontWeight: 'bold'
-            }}
-          >
-            Stonkie
-          </Typography>
-        </Box>
-        <Box>
-          <ReactMarkdown
-            components={{
-              h2: ({ children }) => (
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mt: 1, mb: 2 }}>
-                  {children}
-                </Typography>
-              ),
-              p: ({ children }) => (
-                <Typography sx={{ mb: 1.5, color: 'text.primary' }}>{children}</Typography>
-              ),
-              strong: ({ children }) => (
-                <Typography component="span" sx={{ fontWeight: 'bold' }}>
-                  {children}
-                </Typography>
-              ),
-              ul: ({ children }) => (
-                <Box component="ul" sx={{ pl: 2, mb: 1.5 }}>
-                  {children}
-                </Box>
-              ),
-              li: ({ children }) => (
-                <Typography component="li" sx={{ mb: 0.5 }}>
-                  {children}
-                </Typography>
-              ),
-              table: ({ children }) => (
-                <Box sx={{ overflowX: 'auto', mb: 2 }}>
-                  <table style={{ 
-                    borderCollapse: 'collapse', 
-                    width: '100%',
-                    fontSize: '0.875rem'
-                  }}>
-                    {children}
-                  </table>
-                </Box>
-              ),
-              th: ({ children }) => (
-                <th style={{ 
-                  border: '1px solid #ddd',
-                  padding: '8px',
-                  backgroundColor: '#f5f5f5',
-                  textAlign: 'left'
-                }}>
-                  {children}
-                </th>
-              ),
-              td: ({ children }) => (
-                <td style={{ 
-                  border: '1px solid #ddd',
-                  padding: '8px'
-                }}>
-                  {children}
-                </td>
-              ),
-            }}
-          >
-            {content}
-          </ReactMarkdown>
-        </Box>
-      </Box>
-    );
   };
 
   return (
@@ -521,70 +326,21 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
                   isUser={message.type === 'user'}
                   isFAQ={message.isFAQ}
                   suggestions={message.suggestions}
+                  onFAQClick={handleFAQClick}
                 />
               </Box>
             ))}
             <div ref={messagesEndRef} />
           </Box>
 
-          <form onSubmit={(e) => handleSubmit(e)} style={{ 
-            marginBottom: '12px',
-            position: 'absolute',
-            bottom: 32,
-            left: 0,
-            right: 0,
-            paddingLeft: '32px',
-            paddingRight: '32px'
-          }}>
-            <Box>
-              <TextField
-                fullWidth
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={messages.length > 0 ? "Ask follow up..." : (ticker ? `Ask me anything about ${ticker}...` : "Ask about financial analysis...")}
-                disabled={isLoading}
-                size="small"
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 8,
-                    pr: '14px',
-                    backgroundColor: 'white',
-                    '& input': {
-                      py: 1.5
-                    }
-                  }
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Button 
-                        type="submit" 
-                        disabled={isLoading || !input.trim()}
-                        sx={{
-                          minWidth: '30px',
-                          width: '30px',
-                          height: '30px',
-                          borderRadius: '50%',
-                          p: 0,
-                          backgroundColor: 'primary.main',
-                          color: 'white',
-                          '&:hover': {
-                            backgroundColor: 'primary.dark'
-                          },
-                          '&:disabled': {
-                            backgroundColor: 'grey.300',
-                            color: 'grey.500'
-                          }
-                        }}
-                      >
-                        <KeyboardArrowUpIcon fontSize="small" />
-                      </Button>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Box>
-          </form>
+          <ChatInput
+            input={input}
+            isLoading={isLoading}
+            ticker={ticker}
+            messagesExist={messages.length > 0}
+            onInputChange={setInput}
+            onSubmit={handleSubmit}
+          />
         </Paper>
       )}
     </Box>
