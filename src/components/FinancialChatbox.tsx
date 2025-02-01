@@ -321,7 +321,19 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
     
     return (
       <Box>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            backgroundColor: 'grey.100',
+            borderRadius: '16px',
+            padding: '4px 16px 4px 8px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            width: 'fit-content',
+            mb: 1.5
+          }}
+        >
           <Box
             component="img"
             src="/stonkie.png"
@@ -336,7 +348,6 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
           <Typography 
             sx={{ 
               color: 'text.secondary',
-              mb: 1,
               fontWeight: 'bold'
             }}
           >
