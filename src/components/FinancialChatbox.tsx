@@ -64,7 +64,16 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
   const [isFAQLoading, setIsFAQLoading] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const theme = useTheme();
-  const [streamingMessage, setStreamingMessage] = useState<string[]>([]);
+
+  useEffect(() => {
+    setMessages([
+      { 
+        type: 'bot', 
+        content: initialMessage 
+      }
+    ]);
+    setHasFetchedFAQs(false);
+  }, [ticker, initialMessage]);
 
   const handleFAQClick = async (question: string) => {
     setInput(question);
