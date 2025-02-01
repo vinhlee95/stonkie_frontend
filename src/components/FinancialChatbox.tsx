@@ -447,49 +447,38 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
       
       {isVisible && (
         <Paper elevation={3} sx={{ 
-          p: { xs: '32px 0', sm: 4 },
+          p: { xs: '0', sm: 4 },
           clear: 'both', 
           position: 'relative',
-          borderRadius: { xs: '16px 16px 0 0', sm: 4 }
+          borderRadius: { xs: '16px 16px 0 0', sm: 4 },
+          height: { xs: '100vh', sm: '100vh' }
         }}>
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            borderBottom: 1,
-            borderColor: 'divider',
-            pb: 1,
-            mb: 2,
-            px: { xs: 4, sm: 0 }
-          }}>
-            <Typography variant="h6" sx={{ 
-              display: 'flex', 
-              alignItems: 'center',
-              gap: 1
-            }}>
-              Chat with Stonkie about {ticker}
-            </Typography>
-            <Button 
-              onClick={() => setIsVisible(false)}
-              sx={{ 
-                minWidth: 'auto',
-                width: 32,
-                height: 32,
-                p: 0,
-                borderRadius: '50%',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
-                }
-              }}
-            >
-              <Typography sx={{ fontSize: '20px' }}>✕</Typography>
-            </Button>
-          </Box>
+          <Button 
+            onClick={() => setIsVisible(false)}
+            sx={{ 
+              minWidth: 'auto',
+              width: 32,
+              height: 32,
+              p: 0,
+              position: 'fixed',
+              top: { xs: 8, sm: 28 },
+              right: { xs: 8, sm: 28 },
+              borderRadius: '50%',
+              backgroundColor: 'background.paper',
+              boxShadow: 1,
+              zIndex: 1200,
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.04)'
+              }
+            }}
+          >
+            <Typography sx={{ fontSize: '20px' }}>✕</Typography>
+          </Button>
           
           <Box sx={{ 
             height: {
-              xs: '75vh',
-              sm: '65vh'
+              xs: 'calc(100vh - 76px)',
+              sm: 'calc(100vh - 76px)'
             },
             overflowY: 'auto',
             mb: 3,
@@ -545,6 +534,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
                 sx={{
                   mb: 4,
                   position: 'relative',
+                  mt: index === 0 ? 2 : 0,
                 }}
               >
                 <MessageContent 
