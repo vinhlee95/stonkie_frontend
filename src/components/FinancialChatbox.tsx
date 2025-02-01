@@ -541,7 +541,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
                 fullWidth
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about financial analysis..."
+                placeholder={messages.length > 0 ? "Ask follow up..." : (ticker ? `Ask me anything about ${ticker}...` : "Ask about financial analysis...")}
                 disabled={isLoading}
                 size="small"
                 sx={{
