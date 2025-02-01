@@ -3,7 +3,6 @@ import { Box, TextField, Button, Paper, Typography, InputAdornment } from '@mui/
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import SendIcon from '@mui/icons-material/Send';
 import ReactMarkdown from 'react-markdown';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useTheme } from '@mui/material/styles';
 
@@ -54,7 +53,6 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [showScrollButton, setShowScrollButton] = useState(false);
   const [hasFetchedFAQs, setHasFetchedFAQs] = useState(false);
   const [isFAQLoading, setIsFAQLoading] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
@@ -164,18 +162,15 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
   };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const element = e.currentTarget;
-    const isScrollable = element.scrollHeight > element.clientHeight;
-    setShowScrollButton(isScrollable);
+    // Remove this function if not used elsewhere
   };
 
   useEffect(() => {
     const chatBox = messagesEndRef.current?.parentElement;
     if (chatBox) {
       const isScrollable = chatBox.scrollHeight > chatBox.clientHeight;
-      setShowScrollButton(isScrollable);
     }
-  }, [messages]);
+  }, [messages]);  // Remove this useEffect
 
   const fetchFAQsStream = async() => {
     setIsFAQLoading(true);
@@ -503,37 +498,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
             '&::-webkit-scrollbar-thumb:hover': {
               background: '#555',
             },
-          }}
-          onScroll={handleScroll}>
-            {showScrollButton && (
-              <Box sx={{ 
-                position: 'sticky',
-                top: '1px',
-                left: '1px',
-                zIndex: 1,
-                ml: 2,
-                marginLeft: 0
-              }}>
-                <Button
-                  onClick={scrollToBottom}
-                  size="small"
-                  sx={{
-                    minWidth: '32px',
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    padding: 0,
-                    backgroundColor: 'background.paper',
-                    boxShadow: 1,
-                    '&:hover': {
-                      backgroundColor: 'action.hover',
-                    }
-                  }}
-                >
-                  <KeyboardArrowDownIcon />
-                </Button>
-              </Box>
-            )}
+          }}>
             {messages.map((message, index) => (
               <Box
                 key={index}
