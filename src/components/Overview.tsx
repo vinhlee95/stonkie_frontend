@@ -64,30 +64,34 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
           type: 'bar' as const,
           label: 'Revenue',
           data: years.map(year => parseFloat(revenueRow[year].toString().replace(/[^0-9.-]+/g, ''))),
-          backgroundColor: 'rgba(53, 162, 235, 0.5)',
-          borderColor: 'rgba(53, 162, 235, 1)',
-          borderWidth: 1,
+          backgroundColor: '#4287f5', // Solid blue color
+          borderColor: '#4287f5',
+          borderWidth: 0, // Remove border
+          borderRadius: 4, // Rounded corners
           yAxisID: 'y',
         },
         {
           type: 'bar' as const,
           label: 'Net income',
           data: years.map(year => parseFloat(netIncome[year].toString().replace(/[^0-9.-]+/g, ''))),
-          backgroundColor: 'rgba(75, 192, 192, 0.5)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1,
+          backgroundColor: '#63e6e2', // Solid turquoise color
+          borderColor: '#63e6e2',
+          borderWidth: 0, // Remove border
+          borderRadius: 4, // Rounded corners
           yAxisID: 'y',
         },
         {
           type: 'line' as const,
           label: 'Net Margin (%)',
           data: netMarginData,
-          borderColor: 'rgba(255, 159, 64, 1)',
+          borderColor: '#ff9f40',
           borderWidth: 2,
-          pointBackgroundColor: 'rgba(255, 159, 64, 1)',
+          pointBackgroundColor: '#ff9f40',
           pointRadius: 4,
+          pointHoverRadius: 6,
           fill: false,
           yAxisID: 'percentage',
+          tension: 0.4, // Add slight curve to line
         },
       ],
     };
@@ -97,19 +101,44 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'top' as const,
+          position: 'bottom' as const,
+          labels: {
+            padding: 20,
+            usePointStyle: true,
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+            },
+          },
         },
         title: {
-          display: true,
-          text: 'Revenue, Net Income, and Net Margin Trends',
+          display: false,
         },
       },
       scales: {
+        x: {
+          grid: {
+            display: false, // Remove vertical grid lines
+          },
+          ticks: {
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+            },
+          },
+        },
         y: {
           beginAtZero: true,
           position: 'left' as const,
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)', // Very subtle grid lines
+          },
           ticks: {
-            callback: function(value: any, index: number, values: any[]): string {
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+            },
+            callback: function(value: any): string {
               if (typeof value !== 'number') return '';
               return value >= 1e9 
                 ? `$${(value / 1e9).toFixed(1)}B`
@@ -123,11 +152,15 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
           beginAtZero: true,
           position: 'right' as const,
           grid: {
-            drawOnChartArea: false,
+            display: false, // Remove grid lines for percentage axis
           },
           ticks: {
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+            },
             callback: function(value: any): string {
-              return `${Number(value).toFixed(2)}%`;
+              return `${Number(value).toFixed(0)}%`;
             },
           },
         },
@@ -135,9 +168,21 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
     };
 
     return (
-      <Box sx={{ height: 400, mt: 4 }}>
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Growth and profitability
+      <Box sx={{ 
+        height: 250,
+        mt: 4,
+        borderRadius: 2,
+        p: 3,
+      }}>
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            mb: 2,
+            fontWeight: 500,
+            fontSize: '1.5rem',
+          }}
+        >
+          Growth and Profitability
         </Typography>
         <Chart type='bar' data={chartData} options={options} />
       </Box>
@@ -174,9 +219,10 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
             if(!basicEPS[year]) return 0
             return parseFloat(basicEPS[year].toString().replace(/[^0-9.-]+/g, ''))
           }),
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 1,
+          backgroundColor: '#4287f5', // Solid blue color
+          borderColor: '#4287f5',
+          borderWidth: 0, // Remove border
+          borderRadius: 4, // Rounded corners
         },
         {
           type: 'bar' as const,
@@ -185,9 +231,10 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
             if(!dilutedEPS[year]) return 0
             return parseFloat(dilutedEPS[year].toString().replace(/[^0-9.-]+/g, ''))
           }),
-          backgroundColor: 'rgba(153, 102, 255, 0.5)',
-          borderColor: 'rgba(153, 102, 255, 1)',
-          borderWidth: 1,
+          backgroundColor: '#63e6e2', // Solid turquoise color
+          borderColor: '#63e6e2',
+          borderWidth: 0, // Remove border
+          borderRadius: 4, // Rounded corners
         },
       ],
     };
@@ -197,17 +244,42 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'top' as const,
+          position: 'bottom' as const,
+          labels: {
+            padding: 20,
+            usePointStyle: true,
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+            },
+          },
         },
         title: {
-          display: true,
-          text: 'EPS Trends',
+          display: false,
         },
       },
       scales: {
+        x: {
+          grid: {
+            display: false,
+          },
+          ticks: {
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+            },
+          },
+        },
         y: {
           beginAtZero: true,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.1)',
+          },
           ticks: {
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+            },
             callback: function(value: any): string {
               return `$${Number(value).toFixed(2)}`;
             },
@@ -217,8 +289,20 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
     };
 
     return (
-      <Box sx={{ height: 400, mt: 4 }}>
-        <Typography variant="h5" sx={{ mb: 2 }}>
+      <Box sx={{ 
+        height: 250,
+        mt: 4,
+        borderRadius: 2,
+        p: 3,
+      }}>
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            mb: 2,
+            fontWeight: 500,
+            fontSize: '1.5rem',
+          }}
+        >
           Earnings Per Share
         </Typography>
         <Chart type='bar' data={chartData} options={options} />
@@ -274,9 +358,10 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
             if(!totalDebt[year]) return 0;
             return parseFloat(totalDebt[year].toString().replace(/[^0-9.-]+/g, ''));
           }),
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 1,
+          backgroundColor: '#4287f5', // Solid blue color
+          borderColor: '#4287f5',
+          borderWidth: 0,
+          borderRadius: 4,
         },
         {
           type: 'bar' as const,
@@ -285,31 +370,29 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
             if(!freeCashFlow[year]) return 0;
             return parseFloat(freeCashFlow[year].toString().replace(/[^0-9.-]+/g, ''));
           }),
-          backgroundColor: 'rgba(75, 192, 192, 0.5)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1,
+          backgroundColor: '#63e6e2', // Solid turquoise color
+          borderColor: '#63e6e2',
+          borderWidth: 0,
+          borderRadius: 4,
         },
         {
           type: 'bar' as const,
           label: 'Cash and Cash Equivalents',
           data: years.map(year => {
             if(!cash && !cashEquivalents && !cashAndCashEquivalents) return 0;
-            // Render from breakdowns
             if(cash && cashEquivalents) {
               if(!cash[year] || !cashEquivalents[year]) return 0;
-              
               const cashValue = parseFloat(cash[year].toString().replace(/[^0-9.-]+/g, ''));
               const equivalentsValue = parseFloat(cashEquivalents[year].toString().replace(/[^0-9.-]+/g, ''));
               return cashValue + equivalentsValue;
             }
-
-            // Fallback - render from 'cash and cash equivalents'
             if(!cashAndCashEquivalents || !cashAndCashEquivalents[year]) return 0;
             return parseFloat(cashAndCashEquivalents[year].toString().replace(/[^0-9.-]+/g, ''));
           }),
-          backgroundColor: 'rgba(153, 102, 255, 0.5)',
-          borderColor: 'rgba(153, 102, 255, 1)',
-          borderWidth: 1,
+          backgroundColor: '#ff9f40', // Solid orange color
+          borderColor: '#ff9f40',
+          borderWidth: 0,
+          borderRadius: 4,
         },
       ],
     };
@@ -319,17 +402,42 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'top' as const,
+          position: 'bottom' as const,
+          labels: {
+            padding: 20,
+            usePointStyle: true,
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+            },
+          },
         },
         title: {
-          display: true,
-          text: 'Debt and Coverage',
+          display: false,
         },
       },
       scales: {
+        x: {
+          grid: {
+            display: false,
+          },
+          ticks: {
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+            },
+          },
+        },
         y: {
           beginAtZero: true,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.1)',
+          },
           ticks: {
+            font: {
+              family: "'Inter', sans-serif",
+              size: 12,
+            },
             callback: function(value: any): string {
               if (typeof value !== 'number') return '';
               return value >= 1e9 
@@ -344,8 +452,20 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
     };
 
     return (
-      <Box sx={{ height: 400, mt: 4 }}>
-        <Typography variant="h5" sx={{ mb: 2 }}>
+      <Box sx={{ 
+        height: 250,
+        mt: 4,
+        borderRadius: 2,
+        p: 3,
+      }}>
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            mb: 2,
+            fontWeight: 500,
+            fontSize: '1.5rem',
+          }}
+        >
           Debt and Coverage
         </Typography>
         <Chart type='bar' data={chartData} options={options} />
