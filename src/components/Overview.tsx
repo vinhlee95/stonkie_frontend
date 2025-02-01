@@ -172,7 +172,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         height: 250,
         mt: 4,
         borderRadius: 2,
-        p: 3,
+        px: 3,
       }}>
         <Typography 
           variant="h5" 
@@ -291,9 +291,9 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
     return (
       <Box sx={{ 
         height: 250,
-        mt: 4,
+        mt: 2,
         borderRadius: 2,
-        p: 3,
+        px: 3,
       }}>
         <Typography 
           variant="h5" 
@@ -301,6 +301,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
             mb: 2,
             fontWeight: 500,
             fontSize: '1.5rem',
+            marginTop: 4,
           }}
         >
           Earnings Per Share
@@ -456,7 +457,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         height: 250,
         mt: 4,
         borderRadius: 2,
-        p: 3,
+        px: 3,
       }}>
         <Typography 
           variant="h5" 
