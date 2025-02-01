@@ -447,7 +447,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
       
       {isVisible && (
         <Paper elevation={3} sx={{ 
-          p: 4,
+          p: { xs: '32px 0', sm: 4 },
           clear: 'both', 
           position: 'relative',
           borderRadius: { xs: '16px 16px 0 0', sm: 4 }
@@ -459,7 +459,8 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
             borderBottom: 1,
             borderColor: 'divider',
             pb: 1,
-            mb: 2
+            mb: 2,
+            px: { xs: 4, sm: 0 }
           }}>
             <Typography variant="h6" sx={{ 
               display: 'flex', 
@@ -493,8 +494,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
             overflowY: 'auto',
             mb: 3,
             position: 'relative',
-            mr: -2,
-            pr: 2,
+            px: { xs: 4, sm: 0 },
             '&::-webkit-scrollbar': {
               width: '8px',
             },
@@ -559,42 +559,44 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
           </Box>
 
           <form onSubmit={(e) => handleSubmit(e)} style={{ marginBottom: '12px' }}>
-            <TextField
-              fullWidth
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about financial analysis..."
-              disabled={isLoading}
-              size="small"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 3,
-                  pr: '8px',
-                  '& input': {
-                    py: 1.5
+            <Box sx={{ px: { xs: 4, sm: 0 } }}>
+              <TextField
+                fullWidth
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask about financial analysis..."
+                disabled={isLoading}
+                size="small"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                    pr: '8px',
+                    '& input': {
+                      py: 1.5
+                    }
                   }
-                }
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <Button 
-                      type="submit" 
-                      disabled={isLoading || !input.trim()}
-                      sx={{
-                        minWidth: '40px',
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '50%',
-                        p: 0,
-                      }}
-                    >
-                      <SendIcon fontSize="small" />
-                    </Button>
-                  </InputAdornment>
-                ),
-              }}
-            />
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Button 
+                        type="submit" 
+                        disabled={isLoading || !input.trim()}
+                        sx={{
+                          minWidth: '40px',
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          p: 0,
+                        }}
+                      >
+                        <SendIcon fontSize="small" />
+                      </Button>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
           </form>
         </Paper>
       )}
