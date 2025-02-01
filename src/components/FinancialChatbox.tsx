@@ -276,7 +276,10 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
             fontSize: '1.75rem',
             fontWeight: 500,
             mb: 3,
-            color: 'text.primary'
+            color: 'text.primary',
+            pt: 2,
+            borderTop: '1px solid',
+            borderColor: 'divider'
           }}
         >
           {content}
