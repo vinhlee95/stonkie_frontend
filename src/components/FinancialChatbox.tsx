@@ -418,7 +418,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
               alignItems: 'center',
               gap: 1
             }}>
-              Chat with Stonkie
+              Chat with Stonkie about {ticker}
             </Typography>
             <Button 
               onClick={() => setIsVisible(false)}
