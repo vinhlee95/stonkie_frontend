@@ -439,8 +439,8 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker, initialMess
           
           <Box sx={{ 
             height: {
-              xs: '60vh',
-              sm: '75vh'
+              xs: '75vh',
+              sm: '65vh'
             },
             overflowY: 'auto',
             mt: 2,
