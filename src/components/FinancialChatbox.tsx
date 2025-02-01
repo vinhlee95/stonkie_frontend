@@ -5,6 +5,7 @@ import SendIcon from '@mui/icons-material/Send';
 import ReactMarkdown from 'react-markdown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useTheme } from '@mui/material/styles';
+import AddIcon from '@mui/icons-material/Add';
 
 interface Message {
   type: 'user' | 'bot';
@@ -291,29 +292,36 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
     if (isFAQ && suggestions) {
       return (
         <Box>
-          <Typography sx={{ mb: 1 }}>{content}</Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {content && <Typography sx={{ mb: 1 }}>{content}</Typography>}
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             {suggestions.map((suggestion, index) => (
-              <Button
+              <Box
                 key={index}
-                variant="outlined"
-                size="small"
                 onClick={() => handleFAQClick(suggestion)}
                 sx={{
-                  justifyContent: 'flex-start',
-                  textAlign: 'left',
-                  textTransform: 'none',
-                  p: 1,
-                  borderColor: 'grey.300',
-                  color: 'text.primary',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  py: 1.5,
+                  borderBottom: '1px solid',
+                  borderColor: 'divider',
+                  cursor: 'pointer',
                   '&:hover': {
                     backgroundColor: 'action.hover',
-                    borderColor: 'primary.main',
                   }
                 }}
               >
-                {suggestion}
-              </Button>
+                <Typography 
+                  sx={{ 
+                    color: 'text.primary',
+                    flex: 1,
+                    pr: 2
+                  }}
+                >
+                  {suggestion}
+                </Typography>
+                <AddIcon sx={{ color: 'primary.main' }} />
+              </Box>
             ))}
           </Box>
         </Box>
