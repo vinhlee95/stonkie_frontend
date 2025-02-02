@@ -118,6 +118,9 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
         onChange={handleTabChange}
         sx={{
           mb: 3,
+          mt: 2,
+          borderRadius: '25px',
+          padding: '8px',
           '& .MuiTab-root': {
             borderRadius: '20px',
             minHeight: '40px',
@@ -126,7 +129,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
             fontWeight: 500,
             color: 'text.primary',
             '&.Mui-selected': {
-              backgroundColor: 'background.paper',
+              backgroundColor: 'rgba(107, 159, 255, 0.1)',
               color: 'text.primary',
             },
           },
