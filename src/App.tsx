@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { FinancialData, ReportType } from './types';
 import {
@@ -8,6 +8,9 @@ import {
   createTheme,
   ThemeProvider,
   Snackbar,
+  IconButton,
+  useMediaQuery,
+  PaletteMode
 } from '@mui/material';
 import FinancialChatbox from './components/FinancialChatbox';
 import { 
@@ -26,6 +29,8 @@ import {
 import CompanySearch from './components/CompanySearch';
 import TickerDetail from './components/TickerDetail';
 import Home from './components/Home';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 // Register ChartJS components
 ChartJS.register(
@@ -43,14 +48,32 @@ ChartJS.register(
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
 
-const theme = createTheme({
-  typography: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
-  },
-});
-
-// Lift the state and handlers to App
 const App: React.FC = () => {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const [mode, setMode] = useState<PaletteMode>(() => {
+    const savedMode = localStorage.getItem('theme-mode');
+    return (savedMode as PaletteMode) || (prefersDarkMode ? 'dark' : 'light');
+  });
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+        },
+        typography: {
+          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
+        },
+      }),
+    [mode]
+  );
+
+  const toggleColorMode = () => {
+    const newMode = mode === 'light' ? 'dark' : 'light';
+    setMode(newMode);
+    localStorage.setItem('theme-mode', newMode);
+  };
+
   const navigate = useNavigate();
   const location = useLocation();
   const [financialData, setFinancialData] = useState<Record<ReportType, FinancialData | null>>({
@@ -62,6 +85,8 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+
+  const isDesktop = useMediaQuery('(min-width:600px)');
 
   // Move these functions from Home to App
   const fetchFinancialData = async (ticker: string, reportTypes: ReportType[] = ['income_statement', 'balance_sheet', 'cash_flow']) => {
@@ -122,71 +147,95 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
-        <CompanySearch
-          ticker={ticker}
-          loading={loading}
-          onTickerChange={handleTickerChange}
-          onSubmit={handleSubmit}
-        />
-
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route 
-            path="/tickers/:ticker/overview" 
-            element={<TickerDetail 
-              defaultTab="overview" 
-              financialData={financialData}
-              fetchFinancialData={fetchFinancialData}
+      <Box sx={{ 
+        bgcolor: 'background.default',
+        color: 'text.primary',
+        minHeight: '100vh'
+      }}>
+        <Container maxWidth="xl" sx={{ py: 4 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            // alignItems: 'center',
+            gap: 2, 
+          }}>
+            <CompanySearch
+              ticker={ticker}
               loading={loading}
-              error={error}
-              setCurrentTicker={setTicker}
-            />} 
-          />
-          <Route 
-            path="/tickers/:ticker/statements" 
-            element={<TickerDetail 
-              defaultTab="statements" 
-              financialData={financialData}
-              fetchFinancialData={fetchFinancialData}
-              loading={loading}
-              error={error}
-              setCurrentTicker={setTicker}
-            />} 
-          />
-        </Routes>
+              onTickerChange={handleTickerChange}
+              onSubmit={handleSubmit}
+            />
+            <Box>
+              <IconButton 
+                onClick={toggleColorMode} 
+                color="inherit"
+                sx={{
+                  marginTop: isDesktop ? 1.5 : 0
+                }}
+              >
+                {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+            </Box>
+          </Box>
 
-        <Box
-          sx={{
-            position: 'fixed',
-            bottom: 20,
-            right: 20,
-            zIndex: 1000,
-            boxShadow: 20,
-            maxWidth: '500px',
-            width: '100%',
-          }}
-        >
-          <FinancialChatbox 
-            ticker={ticker} 
-          />
-        </Box>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route 
+              path="/tickers/:ticker/overview" 
+              element={<TickerDetail 
+                defaultTab="overview" 
+                financialData={financialData}
+                fetchFinancialData={fetchFinancialData}
+                loading={loading}
+                error={error}
+                setCurrentTicker={setTicker}
+              />} 
+            />
+            <Route 
+              path="/tickers/:ticker/statements" 
+              element={<TickerDetail 
+                defaultTab="statements" 
+                financialData={financialData}
+                fetchFinancialData={fetchFinancialData}
+                loading={loading}
+                error={error}
+                setCurrentTicker={setTicker}
+              />} 
+            />
+          </Routes>
 
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={2500}
-          onClose={handleSnackbarClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          <Alert 
-            onClose={handleSnackbarClose} 
-            severity="error" 
-            sx={{ width: '100%' }}
+          <Box
+            sx={{
+              position: 'fixed',
+              bottom: 20,
+              right: 20,
+              zIndex: 1000,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+              gap: 2
+            }}
           >
-            {error}
-          </Alert>
-        </Snackbar>
-      </Container>
+            <Box sx={{ boxShadow: 20, maxWidth: '500px', width: '100%' }}>
+              <FinancialChatbox ticker={ticker} />
+            </Box>
+          </Box>
+
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={2500}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          >
+            <Alert 
+              onClose={handleSnackbarClose} 
+              severity="error" 
+              sx={{ width: '100%' }}
+            >
+              {error}
+            </Alert>
+          </Snackbar>
+        </Container>
+      </Box>
     </ThemeProvider>
   );
 };
