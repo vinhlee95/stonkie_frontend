@@ -264,7 +264,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
       
       {isVisible && (
         <Paper elevation={3} sx={{ 
-          p: { xs: '0', sm: 4 },
+          p: { xs: '0', sm: '4px 0 4px 0' },
           clear: 'both', 
           position: 'relative',
           borderRadius: { 
@@ -335,7 +335,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
             overflowY: 'auto',
             mb: 3,
             position: 'relative',
-            px: { xs: 4, sm: 0 },
+            px: 0,
             flex: 1,
             '&::-webkit-scrollbar': {
               width: '8px',
@@ -358,6 +358,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
                   mb: 4,
                   position: 'relative',
                   mt: index === 0 ? 2 : 0,
+                  px: { xs: 4, sm: 4 },
                 }}
               >
                 <MessageContent 
