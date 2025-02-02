@@ -26,6 +26,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [hasFetchedFAQs, setHasFetchedFAQs] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const [isMaximized, setIsMaximized] = useState(false);
 
   useEffect(() => {
     setMessages([]);
@@ -236,11 +237,12 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
   return (
     <Box sx={{ 
       position: 'fixed', 
-      bottom: { xs: 0, sm: 20 },
-      right: { xs: 0, sm: 20 },
-      maxWidth: { xs: '100%', sm: '90%' },
-      width: { xs: '100%', sm: 800 },
-      px: { xs: 0, sm: 0 }
+      top: isMaximized ? 0 : 'auto',
+      bottom: { xs: 0, sm: isMaximized ? 0 : 20 },
+      right: { xs: 0, sm: isMaximized ? 0 : 20 },
+      maxWidth: { xs: '100%', sm: isMaximized ? '100%' : '90%' },
+      width: { xs: '100%', sm: isMaximized ? '100%' : 800 },
+      px: { xs: 0, sm: 0 },
     }}>
       {!isVisible && (
         <Button 
@@ -265,9 +267,41 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
           p: { xs: '0', sm: 4 },
           clear: 'both', 
           position: 'relative',
-          borderRadius: { xs: '16px 16px 0 0', sm: 4 },
-          height: { xs: '100vh', sm: '80vh' }
+          borderRadius: { 
+            xs: '16px 16px 0 0', 
+            sm: isMaximized ? 0 : 4 
+          },
+          height: isMaximized ? 'calc(100vh - 50px)' : { xs: '100vh', sm: '80vh' },
+          display: 'flex',
+          flexDirection: 'column'
         }}>
+          {/* Maximize button - desktop only */}
+          <Button 
+            onClick={() => setIsMaximized(prev => !prev)}
+            sx={{ 
+              minWidth: 'auto',
+              width: 32,
+              height: 32,
+              p: 0,
+              position: 'absolute',
+              top: { xs: 8, sm: 8 },
+              right: { xs: 48, sm: 48 },
+              borderRadius: '50%',
+              backgroundColor: 'background.paper',
+              boxShadow: 1,
+              zIndex: 1200,
+              display: { xs: 'none', sm: 'flex' },
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.04)'
+              }
+            }}
+          >
+            <Typography sx={{ fontSize: '32px' }}>
+              {isMaximized ? '-' : '⤢'}
+            </Typography>
+          </Button>
+          
+          {/* Close button - adjust position on mobile */}
           <Button 
             onClick={() => setIsVisible(false)}
             sx={{ 
@@ -292,13 +326,14 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
           
           <Box sx={{ 
             height: {
-              xs: 'calc(100vh - 76px)',
-              sm: 'calc(80vh - 76px)'
+              xs: 'calc(100vh - 120px)',
+              sm: isMaximized ? 'calc(100vh - 140px)' : 'calc(80vh - 76px)'
             },
             overflowY: 'auto',
             mb: 3,
             position: 'relative',
             px: { xs: 4, sm: 0 },
+            flex: 1,
             '&::-webkit-scrollbar': {
               width: '8px',
             },
