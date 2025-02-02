@@ -164,9 +164,53 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     );
   };
 
+  const renderBalanceSheetChart = () => {
+    if (currentTab !== 'balance_sheet' || !financialData.balance_sheet) return null;
+
+    const metrics = [
+      { label: 'Total Assets', key: 'total assets', color: '#3b82f6' },
+      { label: 'Total Liabilities', key: 'total liabilities', color: '#ef4444' },
+    ];
+
+    // Get all years from the data (excluding 'Breakdown' and 'TTM' columns)
+    const years = Object.keys(financialData.balance_sheet.data[0])
+      .filter(key => key !== 'Breakdown' && key !== 'TTM')
+      .sort()
+      .reverse();
+
+    const datasets = metrics.map(metric => ({
+      type: 'bar' as const,
+      label: metric.label,
+      data: years.map(year => {
+        const row = financialData.balance_sheet?.data.find(
+          row => {
+            if(!row['Breakdown'] || typeof row['Breakdown'] !== 'string') return false;
+            return row['Breakdown'].trim().toLowerCase().includes(metric.key.trim().toLowerCase());
+          }
+        );
+        return row ? Number(row[year]) / 1000000 : 0; // Convert to billions
+      }),
+      backgroundColor: metric.color,
+      borderColor: metric.color,
+      borderRadius: 4,
+      barPercentage: 0.5,
+    }));
+
+    return (
+      <FinancialChart
+        title=""
+        labels={years}
+        datasets={datasets}
+        height={200}
+        marginTop={0}
+        yAxisFormat={(value) => `${value} B`}
+      />
+    );
+  };
+
   return (
     <Box>
-      {renderIncomeStatementChart()}
+      {currentTab === 'income_statement' ? renderIncomeStatementChart() : renderBalanceSheetChart()}
       <Tabs
         value={currentTab}
         onChange={handleTabChange}
