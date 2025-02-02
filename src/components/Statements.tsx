@@ -134,8 +134,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     // Get all years from the data (excluding 'Breakdown' and 'TTM' columns)
     const years = Object.keys(financialData.income_statement.data[0])
       .filter(key => key !== 'Breakdown' && key !== 'TTM')
-      .sort()
-      .reverse();
+      .sort();
 
     const datasets = metrics.map(metric => ({
       type: 'bar' as const,
@@ -155,7 +154,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     return (
       <FinancialChart
         title=""
-        labels={years}
+        labels={years.map(year => year.split('/')[2])}
         datasets={datasets}
         height={200}
         marginTop={0}
@@ -175,8 +174,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     // Get all years from the data (excluding 'Breakdown' and 'TTM' columns)
     const years = Object.keys(financialData.balance_sheet.data[0])
       .filter(key => key !== 'Breakdown' && key !== 'TTM')
-      .sort()
-      .reverse();
+      .sort();
 
     const datasets = metrics.map(metric => ({
       type: 'bar' as const,
@@ -199,7 +197,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     return (
       <FinancialChart
         title=""
-        labels={years}
+        labels={years.map(year => year.split('/')[2])}
         datasets={datasets}
         height={200}
         marginTop={0}
@@ -220,8 +218,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     // Get all years from the data (excluding 'Breakdown' and 'TTM' columns)
     const years = Object.keys(financialData.cash_flow.data[0])
       .filter(key => key !== 'Breakdown' && key !== 'TTM')
-      .sort()
-      .reverse();
+      .sort();
 
     const datasets = metrics.map(metric => ({
       type: 'bar' as const,
@@ -245,7 +242,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     return (
         <FinancialChart
           title=""
-          labels={years}
+          labels={years.map(year => year.split('/')[2])}
           datasets={datasets}
           height={200}
           marginTop={0}
