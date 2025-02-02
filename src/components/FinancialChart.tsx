@@ -28,6 +28,7 @@ interface ChartProps {
     showPercentage?: boolean;
     formatAsCurrency?: boolean;
   };
+  yAxisFormat?: (value: number) => string;
 }
 
 const FinancialChart: React.FC<ChartProps> = ({
@@ -36,7 +37,8 @@ const FinancialChart: React.FC<ChartProps> = ({
   datasets,
   height = 250,
   marginTop = 4,
-  yAxisConfig = { formatAsCurrency: true, showPercentage: false }
+  yAxisConfig = { formatAsCurrency: true, showPercentage: false },
+  yAxisFormat
 }) => {
   const chartData = {
     labels,
@@ -87,6 +89,7 @@ const FinancialChart: React.FC<ChartProps> = ({
           },
           callback: function(value: any): string {
             if (typeof value !== 'number') return '';
+            if (yAxisFormat) return yAxisFormat(value);
             if (!yAxisConfig.formatAsCurrency) return `${value}`;
             return value >= 1e9 
               ? `$${(value / 1e9).toFixed(1)}B`

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tabs, Tab } from '@mui/material';
 import { FinancialData, ReportType } from '../types';
 import { formatNumber } from '../utils/formatters';
+import  FinancialChart from './FinancialChart';
 
 interface StatementsProps {
   financialData: Record<ReportType, FinancialData | null>;
@@ -111,8 +112,61 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     }
   };
 
+  const renderIncomeStatementChart = () => {
+    if (currentTab !== 'income_statement' || !financialData.income_statement) return null;
+
+    const metricsMap = {
+      'totalRevenue': 'Total Revenue',
+      'grossProfit': 'Gross Profit',
+      'operatingIncome': 'Operating Income',
+      'pretaxIncome': 'Pretax Income',
+      'netIncome': 'Net Income',
+    };
+
+    const metrics = [
+      { label: 'Total Revenue', key: 'totalRevenue', color: '#3b82f6' },
+      { label: 'Gross Profit', key: 'grossProfit', color: '#10b981' },
+      { label: 'Operating Income', key: 'operatingIncome', color: '#f59e0b' },
+      { label: 'Pretax Income', key: 'pretaxIncome', color: '#8b5cf6' },
+      { label: 'Net Income', key: 'netIncome', color: '#ef4444' },
+    ];
+
+    // Get all years from the data (excluding 'Breakdown' and 'TTM' columns)
+    const years = Object.keys(financialData.income_statement.data[0])
+      .filter(key => key !== 'Breakdown' && key !== 'TTM')
+      .sort()
+      .reverse();
+
+    const datasets = metrics.map(metric => ({
+      type: 'bar' as const,
+      label: metric.label,
+      data: years.map(year => {
+        const row = financialData.income_statement?.data.find(
+          row => row['Breakdown'] === metricsMap[metric.key as keyof typeof metricsMap]
+        );
+        return row ? Number(row[year]) / 1000000 : 0; // Convert to billions (divide by 1M instead of 1K)
+      }),
+      backgroundColor: metric.color,
+      borderColor: metric.color,
+      borderRadius: 4,
+      barPercentage: 0.7,
+    }));
+
+    return (
+      <FinancialChart
+        title=""
+        labels={years}
+        datasets={datasets}
+        height={200}
+        marginTop={0}
+        yAxisFormat={(value) => `${value} B`} // Add B suffix to y-axis values
+      />
+    );
+  };
+
   return (
     <Box>
+      {renderIncomeStatementChart()}
       <Tabs
         value={currentTab}
         onChange={handleTabChange}
