@@ -345,7 +345,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
           <Box sx={{ 
             height: 'auto',
             overflowY: 'auto',
-            mb: isMaximized ? 0 : 3, // Remove bottom margin in maximized mode
+            mb: 1,
             position: 'relative',
             px: 0,
             flex: 1,
@@ -362,12 +362,13 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
             '&::-webkit-scrollbar-thumb:hover': {
               background: '#555',
             },
+            pb: 10
           }}>
             {messages.map((message, index) => (
               <Box
                 key={index}
                 sx={{
-                  mb: 4,
+                  mb: 1,
                   position: 'relative',
                   mt: index === 0 ? 2 : 0,
                   px: { xs: 4, sm: 4 },
