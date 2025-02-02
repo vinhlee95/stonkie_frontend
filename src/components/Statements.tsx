@@ -7,7 +7,7 @@ interface StatementsProps {
   financialData: Record<ReportType, FinancialData | null>;
 }
 
-const HIGHLIGHTED_BALANCE_SHEET_ROWS = ['Total assets', 'Total liabilities', 'Total equity'];   
+const HIGHLIGHTED_BALANCE_SHEET_ROWS = ['Total assets', 'Total liabilities', 'Total equity', 'Common Stock Equity'];   
 const HIGHLIGHTED_INCOME_STATEMENT_ROWS = ['Total revenue', 'Gross profit', 'Net income'];
 const HIGHLIGHTED_CASH_FLOW_ROWS = ['Operating cash flow', 'Financing cash flow', 'Free cash flow'];
 
@@ -41,8 +41,8 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
         <Typography variant="body1" sx={{ mb: 2 }}>
           All numbers are in thousands of USD.
         </Typography>
-        <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
-          <Table stickyHeader size="small">
+        <TableContainer component={Paper}>
+          <Table size="small">
             <TableHead>
               <TableRow>
                 {data.columns.map((column, index) => (
