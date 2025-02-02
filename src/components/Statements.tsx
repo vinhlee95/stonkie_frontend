@@ -193,7 +193,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
       backgroundColor: metric.color,
       borderColor: metric.color,
       borderRadius: 4,
-      barPercentage: 0.5,
+      barPercentage: 0.7,
     }));
 
     return (
@@ -208,9 +208,61 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     );
   };
 
+  const renderCashFlowChart = () => {
+    if (currentTab !== 'cash_flow' || !financialData.cash_flow) return null;
+
+    const metrics = [
+      { label: 'Operating cash flow', key: 'operating cash flow', color: '#3b82f6' },
+      { label: 'Investing cash flow', key: 'investing cash flow', color: '#10b981' },
+      { label: 'Financing cash flow', key: 'financing cash flow', color: '#f59e0b' },
+    ];
+
+    // Get all years from the data (excluding 'Breakdown' and 'TTM' columns)
+    const years = Object.keys(financialData.cash_flow.data[0])
+      .filter(key => key !== 'Breakdown' && key !== 'TTM')
+      .sort()
+      .reverse();
+
+    const datasets = metrics.map(metric => ({
+      type: 'bar' as const,
+      label: metric.label,
+      data: years.map(year => {
+        const row = financialData.cash_flow?.data.find(
+          row => {
+            if(!row['Breakdown'] || typeof row['Breakdown'] !== 'string') return false;
+            return row['Breakdown'].trim().toLowerCase().includes(metric.key);
+          }
+        );
+        return row ? Number(row[year]) / 1000000 : 0; // Convert to billions
+      }),
+      backgroundColor: metric.color,
+      borderColor: metric.color,
+      borderRadius: 4,
+      barPercentage: 0.6,
+      categoryPercentage: 0.75,
+    }));
+
+    return (
+        <FinancialChart
+          title=""
+          labels={years}
+          datasets={datasets}
+          height={200}
+          marginTop={0}
+          yAxisFormat={(value) => `${value} B`}
+        />
+    );
+  };
+
   return (
     <Box>
-      {currentTab === 'income_statement' ? renderIncomeStatementChart() : renderBalanceSheetChart()}
+      <Box>
+        {currentTab === 'income_statement' 
+          ? renderIncomeStatementChart() 
+          : currentTab === 'balance_sheet'
+          ? renderBalanceSheetChart()
+          : renderCashFlowChart()}
+      </Box>
       <Tabs
         value={currentTab}
         onChange={handleTabChange}
