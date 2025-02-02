@@ -34,6 +34,11 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
       return HIGHLIGHTED_ROWS.some(row => firstCellValue.toLowerCase().includes(row));
     };
 
+    // Create a new columns array with years in reverse order
+    const firstColumn = data.columns[0];
+    const yearColumns = data.columns.slice(1).reverse();
+    const orderedColumns = [firstColumn, ...yearColumns];
+
     return (
       <Box sx={{ mt: 4 }}>
         <Typography variant="h5" sx={{ mb: 2 }}>
@@ -46,7 +51,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
           <Table size="small">
             <TableHead>
               <TableRow>
-                {data.columns.map((column, index) => (
+                {orderedColumns.map((column, index) => (
                   <TableCell
                     key={index}
                     align={index === 0 ? 'left' : 'right'}
@@ -81,7 +86,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
                       }),
                     }}
                   >
-                    {data.columns.map((column, colIndex) => (
+                    {orderedColumns.map((column, colIndex) => (
                       <TableCell 
                         key={colIndex}
                         align={colIndex === 0 ? 'left' : 'right'}
