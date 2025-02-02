@@ -99,6 +99,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         labels={years}
         datasets={datasets}
         yAxisConfig={{ formatAsCurrency: true, showPercentage: true }}
+        yAxisFormat={(value) => `$${(value / 1000000).toFixed(1)}B`}
       />
     );
   };
@@ -159,6 +160,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         labels={years}
         datasets={chartData.datasets}
         yAxisConfig={{ formatAsCurrency: true, showPercentage: false }}
+        yAxisFormat={(value) => `$${value.toFixed(2)}`}
       />
     );
   };
@@ -256,6 +258,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
         labels={years}
         datasets={chartData.datasets}
         yAxisConfig={{ formatAsCurrency: true, showPercentage: false }}
+        yAxisFormat={(value) => `$${(value / 1000000).toFixed(1)}B`}
       />
     );
   };
