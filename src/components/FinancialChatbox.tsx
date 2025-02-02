@@ -234,6 +234,20 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
     }
   };
 
+  // Add effect to control body overflow
+  useEffect(() => {
+    if (isMaximized) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    // Cleanup function to restore scroll when component unmounts
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isMaximized]);
+
   return (
     <Box sx={{ 
       position: 'fixed', 
@@ -271,9 +285,10 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
             xs: '16px 16px 0 0', 
             sm: isMaximized ? 0 : 4 
           },
-          height: isMaximized ? 'calc(100vh - 50px)' : { xs: '100vh', sm: '80vh' },
+          height: isMaximized ? '100%' : { xs: '100vh', sm: '80vh' },
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          overflow: 'hidden'
         }}>
           {/* Maximize button - desktop only */}
           <Button 
@@ -328,12 +343,9 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
           </Button>
           
           <Box sx={{ 
-            height: {
-              xs: 'calc(100vh - 120px)',
-              sm: isMaximized ? 'calc(100vh - 140px)' : 'calc(80vh - 76px)'
-            },
+            height: 'auto',
             overflowY: 'auto',
-            mb: 3,
+            mb: isMaximized ? 0 : 3, // Remove bottom margin in maximized mode
             position: 'relative',
             px: 0,
             flex: 1,
