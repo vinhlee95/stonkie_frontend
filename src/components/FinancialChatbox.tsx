@@ -266,7 +266,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
           clear: 'both', 
           position: 'relative',
           borderRadius: { xs: '16px 16px 0 0', sm: 4 },
-          height: { xs: '100vh', sm: '100vh' }
+          height: { xs: '100vh', sm: '80vh' }
         }}>
           <Button 
             onClick={() => setIsVisible(false)}
@@ -275,9 +275,9 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
               width: 32,
               height: 32,
               p: 0,
-              position: 'fixed',
-              top: { xs: 8, sm: 28 },
-              right: { xs: 8, sm: 28 },
+              position: 'absolute',
+              top: { xs: 8, sm: 8 },
+              right: { xs: 8, sm: 8 },
               borderRadius: '50%',
               backgroundColor: 'background.paper',
               boxShadow: 1,
@@ -293,7 +293,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
           <Box sx={{ 
             height: {
               xs: 'calc(100vh - 76px)',
-              sm: 'calc(100vh - 76px)'
+              sm: 'calc(80vh - 76px)'
             },
             overflowY: 'auto',
             mb: 3,
