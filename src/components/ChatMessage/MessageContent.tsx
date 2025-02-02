@@ -86,7 +86,10 @@ const BotHeader: React.FC = () => (
       display: 'flex',
       alignItems: 'center',
       gap: 1,
-      backgroundColor: 'grey.100',
+      backgroundColor: (theme) => 
+        theme.palette.mode === 'light' 
+          ? theme.palette.grey[200] 
+          : theme.palette.background.paper,
       borderRadius: '16px',
       padding: '4px 16px 4px 8px',
       boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
