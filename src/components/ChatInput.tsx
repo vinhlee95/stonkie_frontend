@@ -41,6 +41,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             borderRadius: 8,
             pr: '14px',
             backgroundColor: 'background.paper',
+            boxShadow: '0px 12px 28px rgba(0, 0, 0, 0.25)',
             '& input': {
               py: 1.5
             }
