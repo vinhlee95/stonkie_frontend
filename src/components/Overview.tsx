@@ -1,14 +1,14 @@
 import React from 'react';
-import { Box, Typography, Grid } from '@mui/material';
-import { FinancialData, ReportType } from '../types';
-import { Chart } from 'react-chartjs-2';
+import { Grid } from '@mui/material';
+import { FinancialData, ReportType } from '../types'
+import FinancialChart from './FinancialChart';
 
 interface OverviewProps {
   financialData: Record<ReportType, FinancialData | null>;
 }
 
 const Overview: React.FC<OverviewProps> = ({ financialData }) => {
-  const renderFinancialChart = (data: FinancialData | null) => {
+  const renderGrowthChart = (data: FinancialData | null) => {
     if (!data) return null;
     const columns = data.columns
     
@@ -57,134 +57,49 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
       return Number(((income / revenue) * 100).toFixed(2)); // Round to 2 decimal places
     });
 
-    const chartData = {
-      labels: years,
-      datasets: [
-        {
-          type: 'bar' as const,
-          label: 'Revenue',
-          data: years.map(year => parseFloat(revenueRow[year].toString().replace(/[^0-9.-]+/g, ''))),
-          backgroundColor: '#4287f5', // Solid blue color
-          borderColor: '#4287f5',
-          borderWidth: 0, // Remove border
-          borderRadius: 4, // Rounded corners
-          yAxisID: 'y',
-        },
-        {
-          type: 'bar' as const,
-          label: 'Net income',
-          data: years.map(year => parseFloat(netIncome[year].toString().replace(/[^0-9.-]+/g, ''))),
-          backgroundColor: '#63e6e2', // Solid turquoise color
-          borderColor: '#63e6e2',
-          borderWidth: 0, // Remove border
-          borderRadius: 4, // Rounded corners
-          yAxisID: 'y',
-        },
-        {
-          type: 'line' as const,
-          label: 'Net Margin (%)',
-          data: netMarginData,
-          borderColor: '#ff9f40',
-          borderWidth: 2,
-          pointBackgroundColor: '#ff9f40',
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          fill: false,
-          yAxisID: 'percentage',
-          tension: 0.4, // Add slight curve to line
-        },
-      ],
-    };
-
-    const options = {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom' as const,
-          labels: {
-            padding: 20,
-            usePointStyle: true,
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-            },
-          },
-        },
-        title: {
-          display: false,
-        },
+    const datasets = [
+      {
+        type: 'bar' as const,
+        label: 'Revenue',
+        data: years.map(year => parseFloat(revenueRow[year].toString().replace(/[^0-9.-]+/g, ''))),
+        backgroundColor: '#4287f5',
+        borderColor: '#4287f5',
+        borderWidth: 0,
+        borderRadius: 4,
+        yAxisID: 'y',
       },
-      scales: {
-        x: {
-          grid: {
-            display: false, // Remove vertical grid lines
-          },
-          ticks: {
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-            },
-          },
-        },
-        y: {
-          beginAtZero: true,
-          position: 'left' as const,
-          grid: {
-            color: 'rgba(255, 255, 255, 0.1)', // Very subtle grid lines
-          },
-          ticks: {
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-            },
-            callback: function(value: any): string {
-              if (typeof value !== 'number') return '';
-              return value >= 1e9 
-                ? `$${(value / 1e9).toFixed(1)}B`
-                : value >= 1e6
-                ? `$${(value / 1e6).toFixed(1)}M`
-                : `$${value}`;
-            },
-          },
-        },
-        percentage: {
-          beginAtZero: true,
-          position: 'right' as const,
-          grid: {
-            display: false, // Remove grid lines for percentage axis
-          },
-          ticks: {
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-            },
-            callback: function(value: any): string {
-              return `${Number(value).toFixed(0)}%`;
-            },
-          },
-        },
+      {
+        type: 'bar' as const,
+        label: 'Net income',
+        data: years.map(year => parseFloat(netIncome[year].toString().replace(/[^0-9.-]+/g, ''))),
+        backgroundColor: '#63e6e2',
+        borderColor: '#63e6e2',
+        borderWidth: 0,
+        borderRadius: 4,
+        yAxisID: 'y',
       },
-    };
+      {
+        type: 'line' as const,
+        label: 'Net Margin (%)',
+        data: netMarginData,
+        borderColor: '#ff9f40',
+        borderWidth: 2,
+        pointBackgroundColor: '#ff9f40',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        fill: false,
+        yAxisID: 'percentage',
+        tension: 0.4,
+      },
+    ];
 
     return (
-      <Box sx={{ 
-        height: 250,
-        mt: 4,
-        borderRadius: 2,
-      }}>
-        <Typography 
-          variant="h5" 
-          sx={{ 
-            mb: 2,
-            fontWeight: 500,
-            fontSize: '1.5rem',
-          }}
-        >
-          Growth and Profitability
-        </Typography>
-        <Chart type='bar' data={chartData} options={options} />
-      </Box>
+      <FinancialChart
+        title="Growth and Profitability"
+        labels={years}
+        datasets={datasets}
+        yAxisConfig={{ formatAsCurrency: true, showPercentage: true }}
+      />
     );
   };
 
@@ -238,74 +153,13 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
       ],
     };
 
-    const options = {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom' as const,
-          labels: {
-            padding: 20,
-            usePointStyle: true,
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-            },
-          },
-        },
-        title: {
-          display: false,
-        },
-      },
-      scales: {
-        x: {
-          grid: {
-            display: false,
-          },
-          ticks: {
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-            },
-          },
-        },
-        y: {
-          beginAtZero: true,
-          grid: {
-            color: 'rgba(0, 0, 0, 0.1)',
-          },
-          ticks: {
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-            },
-            callback: function(value: any): string {
-              return `$${Number(value).toFixed(2)}`;
-            },
-          },
-        },
-      },
-    };
-
     return (
-      <Box sx={{ 
-        height: 250,
-        mt: 2,
-        borderRadius: 2,
-      }}>
-        <Typography 
-          variant="h5" 
-          sx={{ 
-            mb: 2,
-            fontWeight: 500,
-            fontSize: '1.5rem',
-            marginTop: 4,
-          }}
-        >
-          Earnings Per Share
-        </Typography>
-        <Chart type='bar' data={chartData} options={options} />
-      </Box>
+      <FinancialChart
+        title="Earnings Per Share"
+        labels={years}
+        datasets={chartData.datasets}
+        yAxisConfig={{ formatAsCurrency: true, showPercentage: false }}
+      />
     );
   };
 
@@ -396,85 +250,20 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
       ],
     };
 
-    const options = {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom' as const,
-          labels: {
-            padding: 20,
-            usePointStyle: true,
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-            },
-          },
-        },
-        title: {
-          display: false,
-        },
-      },
-      scales: {
-        x: {
-          grid: {
-            display: false,
-          },
-          ticks: {
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-            },
-          },
-        },
-        y: {
-          beginAtZero: true,
-          grid: {
-            color: 'rgba(0, 0, 0, 0.1)',
-          },
-          ticks: {
-            font: {
-              family: "'Inter', sans-serif",
-              size: 12,
-            },
-            callback: function(value: any): string {
-              if (typeof value !== 'number') return '';
-              return value >= 1e9 
-                ? `$${(value / 1e9).toFixed(1)}B`
-                : value >= 1e6
-                ? `$${(value / 1e6).toFixed(1)}M`
-                : `$${value}`;
-            },
-          },
-        },
-      },
-    };
-
     return (
-      <Box sx={{ 
-        height: 250,
-        mt: 4,
-        borderRadius: 2,
-      }}>
-        <Typography 
-          variant="h5" 
-          sx={{ 
-            mb: 2,
-            fontWeight: 500,
-            fontSize: '1.5rem',
-          }}
-        >
-          Debt and Coverage
-        </Typography>
-        <Chart type='bar' data={chartData} options={options} />
-      </Box>
+      <FinancialChart
+        title="Debt and Coverage"
+        labels={years}
+        datasets={chartData.datasets}
+        yAxisConfig={{ formatAsCurrency: true, showPercentage: false }}
+      />
     );
   };
 
   return (
     <Grid container spacing={4}>
       <Grid item xs={12} md={6}>
-        {renderFinancialChart(financialData.income_statement)}
+        {renderGrowthChart(financialData.income_statement)}
       </Grid>
       <Grid item xs={12} md={6}>
         {renderEPSChart(financialData.income_statement)}
