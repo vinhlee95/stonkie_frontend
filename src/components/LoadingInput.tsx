@@ -7,7 +7,7 @@ const LoadingInput: React.FC = () => (
       display: 'flex',
       alignItems: 'center',
       gap: 2,
-      backgroundColor: 'grey.100',
+      backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100',
       borderRadius: 2,
       p: 2,
       position: 'absolute',

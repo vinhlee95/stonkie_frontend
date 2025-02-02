@@ -40,7 +40,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           '& .MuiOutlinedInput-root': {
             borderRadius: 8,
             pr: '14px',
-            backgroundColor: 'white',
+            backgroundColor: 'background.paper',
             '& input': {
               py: 1.5
             }
