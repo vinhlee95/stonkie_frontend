@@ -301,9 +301,12 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
             </Typography>
           </Button>
           
-          {/* Close button - adjust position on mobile */}
+          {/* Close button */}
           <Button 
-            onClick={() => setIsVisible(false)}
+            onClick={() => {
+              setIsMaximized(false);  // Reset maximized state when closing
+              setIsVisible(false);
+            }}
             sx={{ 
               minWidth: 'auto',
               width: 32,
