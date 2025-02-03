@@ -28,8 +28,6 @@ const MessageContent: React.FC<MessageContentProps> = ({
           mb: 3,
           color: 'text.primary',
           pt: 2,
-          borderTop: '1px solid',
-          borderColor: 'divider'
         }}
       >
         {content}
