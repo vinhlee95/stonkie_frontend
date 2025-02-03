@@ -13,6 +13,11 @@ interface Message {
   isStreaming?: boolean;  // Add this field to handle streaming messages
 }
 
+interface MessageChunk {
+  type: 'answer' | 'related_question';
+  body: string;
+}
+
 interface FinancialChatboxProps {
   ticker: string;  // Current ticker passed from parent component
 }
@@ -86,7 +91,28 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
         if (done) break;
 
         const chunk = decoder.decode(value);
-        accumulatedContent += chunk;
+        try {
+          // Split the chunk by newlines and process each JSON object separately
+          const jsonStrings = chunk.split('\n').filter(str => str.trim());
+          for (const jsonStr of jsonStrings) {
+            const parsedChunk: MessageChunk = JSON.parse(jsonStr);
+            
+            if (parsedChunk.type === 'answer') {
+              // Handle regular answer
+              accumulatedContent += parsedChunk.body;
+            } else if (parsedChunk.type === 'related_question') {
+              // Handle related question - add it as a FAQ message
+              setMessages(prev => [...prev, {
+                type: 'bot',
+                content: '',
+                isFAQ: true,
+                suggestions: [parsedChunk.body]
+              }]);
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing chunk:', e);
+        }
 
         // Update the streaming message content with the full accumulated content
         setMessages(prev => {
@@ -122,7 +148,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
       setInput('');
     }
   };
-
+  console.log(messages);
   // Add this useEffect to scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
