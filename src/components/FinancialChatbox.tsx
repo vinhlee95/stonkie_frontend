@@ -148,7 +148,7 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
       setInput('');
     }
   };
-  console.log(messages);
+
   // Add this useEffect to scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
@@ -157,17 +157,6 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    // Remove this function if not used elsewhere
-  };
-
-  useEffect(() => {
-    const chatBox = messagesEndRef.current?.parentElement;
-    if (chatBox) {
-      const isScrollable = chatBox.scrollHeight > chatBox.clientHeight;
-    }
-  }, [messages]);  // Remove this useEffect
 
   const fetchFAQsStream = async() => {    
     try {
@@ -260,19 +249,28 @@ const FinancialChatbox: React.FC<FinancialChatboxProps> = ({ ticker }) => {
     }
   };
 
-  // Add effect to control body overflow
+  // Modify the useEffect for body overflow control
   useEffect(() => {
-    if (isMaximized) {
+    if (isMaximized || (isVisible && window.innerWidth <= 600)) { // Check for mobile viewport
       document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed'; // Prevent bounce effect on iOS
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
     } else {
       document.body.style.overflow = 'auto';
+      document.body.style.position = 'static';
+      document.body.style.width = 'auto';
+      document.body.style.height = 'auto';
     }
 
-    // Cleanup function to restore scroll when component unmounts
+    // Cleanup function
     return () => {
       document.body.style.overflow = 'auto';
+      document.body.style.position = 'static';
+      document.body.style.width = 'auto';
+      document.body.style.height = 'auto';
     };
-  }, [isMaximized]);
+  }, [isMaximized, isVisible]);
 
   return (
     <Box sx={{ 
