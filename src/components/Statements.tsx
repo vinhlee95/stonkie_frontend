@@ -16,6 +16,7 @@ const HIGHLIGHTED_ROWS = [...HIGHLIGHTED_BALANCE_SHEET_ROWS, ...HIGHLIGHTED_INCO
 
 const Statements: React.FC<StatementsProps> = ({ financialData }) => {
   const [currentTab, setCurrentTab] = useState<ReportType>('income_statement');
+  const [showAllMetrics, setShowAllMetrics] = useState(false);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: ReportType) => {
     setCurrentTab(newValue);
@@ -25,7 +26,6 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     if (!data) return null;
 
     const formatCellValue = (value: any, column: string): string => {
-      // Don't format the first column (usually metric names)
       if (column === data.columns[0]) return value;
       return formatNumber(value);
     };
@@ -34,16 +34,33 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
       return HIGHLIGHTED_ROWS.some(row => firstCellValue.toLowerCase().includes(row));
     };
 
-    // Create a new columns array with years in reverse order
+    // Filter rows based on showAllMetrics state
+    const filteredData = showAllMetrics 
+      ? data.data 
+      : data.data.filter(row => isHighlightedRow(String(row[data.columns[0]])));
+
     const firstColumn = data.columns[0];
     const yearColumns = data.columns.slice(1).reverse();
     const orderedColumns = [firstColumn, ...yearColumns];
 
     return (
       <Box sx={{ mt: 4 }}>
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          {title}
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h5">
+            {title}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              cursor: 'pointer',
+              color: 'primary.main',
+              '&:hover': { textDecoration: 'underline' }
+            }}
+            onClick={() => setShowAllMetrics(!showAllMetrics)}
+          >
+            {showAllMetrics ? 'Show Key Metrics' : 'Show All Metrics'}
+          </Typography>
+        </Box>
         <Typography variant="body1" sx={{ mb: 2 }}>
           All numbers are in thousands of USD.
         </Typography>
@@ -57,7 +74,8 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
                     align={index === 0 ? 'left' : 'right'}
                     sx={{
                       fontWeight: 'bold',
-                      backgroundColor: 'background.paper'
+                      backgroundColor: 'background.paper',
+                      padding: '12px 16px',
                     }}
                   >
                     {column}
@@ -66,14 +84,14 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.data.map((row, rowIndex) => {
+              {filteredData.map((row, rowIndex) => {
                 const isHighlighted = isHighlightedRow(String(row[data.columns[0]]));
                 return (
                   <TableRow
                     key={rowIndex}
                     sx={{
                       '&:nth-of-type(odd)': { backgroundColor: 'action.hover' },
-                      ...(isHighlighted && {
+                      ...(isHighlighted && showAllMetrics && {
                         backgroundColor: '#6b9fff',
                         '& .MuiTableCell-root': {
                           color: 'common.white',
@@ -84,6 +102,9 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
                           backgroundColor: '#6b9fff',
                         },
                       }),
+                      '& .MuiTableCell-root': {
+                        padding: '12px 16px',
+                      },
                     }}
                   >
                     {orderedColumns.map((column, colIndex) => (
