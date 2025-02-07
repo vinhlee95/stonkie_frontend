@@ -8,8 +8,8 @@ interface StatementsProps {
   financialData: Record<ReportType, FinancialData | null>;
 }
 
-const HIGHLIGHTED_BALANCE_SHEET_ROWS = ['Total assets', 'Total liabilities', 'Total equity', 'Common Stock Equity'];   
-const HIGHLIGHTED_INCOME_STATEMENT_ROWS = ['Total revenue', 'Gross profit', 'Net income', 'EPS', 'EBIT'];
+const HIGHLIGHTED_BALANCE_SHEET_ROWS = ['Total assets', 'Total liabilities net minority interest', 'Inventory', 'Cash and cash equivalents', 'Total equity', 'Total Debt', 'Net debt', 'Tangible Book Value', 'Common Stock Equity'];   
+const HIGHLIGHTED_INCOME_STATEMENT_ROWS = ['Total revenue', 'Cost of Revenue', 'Gross profit', 'Net income', 'Operating income', 'Operating expense', 'Pretax income', 'EPS', 'Basic EPS', 'Diluted EPS', 'EBIT'];
 const HIGHLIGHTED_CASH_FLOW_ROWS = ['Operating cash flow', 'Financing cash flow', 'Investing cash flow', 'Repurchase of Capital Stock', 'Free cash flow'];
 
 const HIGHLIGHTED_ROWS = [...HIGHLIGHTED_BALANCE_SHEET_ROWS, ...HIGHLIGHTED_INCOME_STATEMENT_ROWS, ...HIGHLIGHTED_CASH_FLOW_ROWS].map(row => row.trim().toLowerCase());
@@ -31,7 +31,7 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
     };
 
     const isHighlightedRow = (firstCellValue: string): boolean => {
-      return HIGHLIGHTED_ROWS.some(row => firstCellValue.toLowerCase().includes(row));
+      return HIGHLIGHTED_ROWS.some(row => firstCellValue.toLowerCase() === row);
     };
 
     // Filter rows based on showAllMetrics state
