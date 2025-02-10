@@ -1,6 +1,6 @@
 import React from 'react';
-import { FinancialData } from '../types';
-import FinancialChart from './FinancialChart';
+import { FinancialData } from '../../types';
+import FinancialChart from '../FinancialChart';
 
 interface DebtCoverageChartProps {
   balanceSheet: FinancialData | null;

@@ -2,9 +2,9 @@ import React from 'react';
 import { Grid, Box } from '@mui/material';
 import { FinancialData, ReportType } from '../types'
 import KeyStats from './KeyStats';
-import GrowthChart from './GrowthChart';
-import EPSChart from './EPSChart';
-import DebtCoverageChart from './DebtCoverageChart';
+import GrowthChart from './overview/GrowthChart';
+import EPSChart from './overview/EPSChart';
+import DebtCoverageChart from './overview/DebtCoverageChart';
 
 // Add new interface for key stats
 interface KeyStats {
