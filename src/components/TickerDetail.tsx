@@ -94,8 +94,8 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
         <Tab value="statements" label="Financial Statements" />
       </Tabs>
 
-      {value === 'overview' && financialData && (
-        <Overview financialData={financialData} />
+      {value === 'overview' && financialData && ticker && (
+        <Overview financialData={financialData} ticker={ticker} />
       )}
       {value === 'statements' && financialData && (
         <Statements financialData={financialData} />

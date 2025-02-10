@@ -1,13 +1,130 @@
 import React from 'react';
-import { Grid } from '@mui/material';
+import { Grid, Paper, Typography, Box } from '@mui/material';
 import { FinancialData, ReportType } from '../types'
 import FinancialChart from './FinancialChart';
 
-interface OverviewProps {
-  financialData: Record<ReportType, FinancialData | null>;
+// Add new interface for key stats
+interface KeyStats {
+  market_cap: number;
+  pe_ratio: number;
+  revenue: number;
+  net_income: number;
+  basic_eps: number;
+  dividend_yield: number;
 }
 
-const Overview: React.FC<OverviewProps> = ({ financialData }) => {
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
+
+interface OverviewProps {
+  financialData: Record<ReportType, FinancialData | null>;
+  ticker: string; // Add ticker prop
+}
+
+const Overview: React.FC<OverviewProps> = ({ financialData, ticker }) => {
+  const [keyStats, setKeyStats] = React.useState<KeyStats | null>(null);
+
+  React.useEffect(() => {
+    const fetchKeyStats = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/companies/${ticker}/key-stats`);
+        const data = await response.json();
+        setKeyStats(data.data);
+      } catch (error) {
+        console.error('Error fetching key stats:', error);
+      }
+    };
+
+    fetchKeyStats();
+  }, [ticker]);
+
+  // Add new function to format numbers
+  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
+  const formatNumber = (num: number, isCurrency: boolean = false): string => {
+    if (num >= 1e12) {
+      return `${isCurrency ? '$' : ''}${(num / 1e12).toFixed(2)}T`;
+    } else if (num >= 1e9) {
+      return `${isCurrency ? '$' : ''}${(num / 1e9).toFixed(2)}B`;
+    } else if (num >= 1e6) {
+      return `${isCurrency ? '$' : ''}${(num / 1e6).toFixed(2)}M`;
+    }
+    return `${isCurrency ? '$' : ''}${num.toFixed(2)}`;
+  };
+
+  // Add new component for key stats
+  const renderKeyStats = () => {
+    if (!keyStats) return null;
+
+    return (
+      <Paper sx={{ p: 2, background: 'transparent' }} elevation={0}>
+        <Typography variant="h5" sx={{ mb: 3 }}>
+          Key Stats
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={3}>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">
+                Market capitalization
+              </Typography>
+              <Typography variant="h6">
+                {formatNumber(keyStats.market_cap, true)}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">
+                Price to earnings Ratio (TTM)
+              </Typography>
+              <Typography variant="h6">
+                {keyStats.pe_ratio.toFixed(2)}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">
+                Dividend yield (indicated)
+              </Typography>
+              <Typography variant="h6">
+                {(keyStats.dividend_yield * 100).toFixed(2)}%
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">
+                Basic EPS (TTM)
+              </Typography>
+              <Typography variant="h6">
+                ${keyStats.basic_eps.toFixed(2)}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">
+                Net income (FY)
+              </Typography>
+              <Typography variant="h6">
+                {formatNumber(keyStats.net_income, true)}
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Box>
+              <Typography variant="subtitle2" color="text.secondary">
+                Revenue (FY)
+              </Typography>
+              <Typography variant="h6">
+                {formatNumber(keyStats.revenue, true)}
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </Paper>
+    );
+  };
+
   const renderGrowthChart = (data: FinancialData | null) => {
     if (!data) return null;
     const columns = data.columns
@@ -264,17 +381,20 @@ const Overview: React.FC<OverviewProps> = ({ financialData }) => {
   };
 
   return (
-    <Grid container spacing={4}>
-      <Grid item xs={12} md={6}>
-        {renderGrowthChart(financialData.income_statement)}
+    <>
+      {renderKeyStats()}
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={6}>
+          {renderGrowthChart(financialData.income_statement)}
+        </Grid>
+        <Grid item xs={12} md={6}>
+          {renderEPSChart(financialData.income_statement)}
+        </Grid>
+        <Grid item xs={12} md={6}>
+          {renderDebtCoverageChart(financialData.balance_sheet, financialData.cash_flow)}
+        </Grid>
       </Grid>
-      <Grid item xs={12} md={6}>
-        {renderEPSChart(financialData.income_statement)}
-      </Grid>
-      <Grid item xs={12} md={6}>
-        {renderDebtCoverageChart(financialData.balance_sheet, financialData.cash_flow)}
-      </Grid>
-    </Grid>
+    </>
   );
 };
 
