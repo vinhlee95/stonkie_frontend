@@ -2,6 +2,7 @@ import React from 'react';
 import { Grid, Paper, Typography, Box } from '@mui/material';
 import { FinancialData, ReportType } from '../types'
 import FinancialChart from './FinancialChart';
+import KeyStats from './KeyStats';
 
 // Add new interface for key stats
 interface KeyStats {
@@ -36,94 +37,6 @@ const Overview: React.FC<OverviewProps> = ({ financialData, ticker }) => {
 
     fetchKeyStats();
   }, [ticker]);
-
-  // Add new function to format numbers
-  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-  const formatNumber = (num: number, isCurrency: boolean = false): string => {
-    if (num >= 1e12) {
-      return `${isCurrency ? '$' : ''}${(num / 1e12).toFixed(2)}T`;
-    } else if (num >= 1e9) {
-      return `${isCurrency ? '$' : ''}${(num / 1e9).toFixed(2)}B`;
-    } else if (num >= 1e6) {
-      return `${isCurrency ? '$' : ''}${(num / 1e6).toFixed(2)}M`;
-    }
-    return `${isCurrency ? '$' : ''}${num.toFixed(2)}`;
-  };
-
-  // Add new component for key stats
-  const renderKeyStats = () => {
-    if (!keyStats) return null;
-
-    return (
-      <Paper sx={{ p: 2, background: 'transparent' }} elevation={0}>
-        <Typography variant="h5" sx={{ mb: 3 }}>
-          Key Stats
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={3}>
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                Market capitalization
-              </Typography>
-              <Typography variant="h6">
-                {formatNumber(keyStats.market_cap, true)}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                Price to earnings Ratio (TTM)
-              </Typography>
-              <Typography variant="h6">
-                {keyStats.pe_ratio.toFixed(2)}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                Dividend yield (indicated)
-              </Typography>
-              <Typography variant="h6">
-                {(keyStats.dividend_yield * 100).toFixed(2)}%
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                Basic EPS (TTM)
-              </Typography>
-              <Typography variant="h6">
-                ${keyStats.basic_eps.toFixed(2)}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                Net income (FY)
-              </Typography>
-              <Typography variant="h6">
-                {formatNumber(keyStats.net_income, true)}
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                Revenue (FY)
-              </Typography>
-              <Typography variant="h6">
-                {formatNumber(keyStats.revenue, true)}
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-      </Paper>
-    );
-  };
 
   const renderGrowthChart = (data: FinancialData | null) => {
     if (!data) return null;
@@ -382,7 +295,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData, ticker }) => {
 
   return (
     <Box>
-      {renderKeyStats()}
+      <KeyStats keyStats={keyStats} />
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
           {renderGrowthChart(financialData.income_statement)}

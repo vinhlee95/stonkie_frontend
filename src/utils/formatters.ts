@@ -1,15 +1,10 @@
-export const formatNumber = (value: string | number | null | undefined): string => {
-  // Handle null, undefined, empty values
-  if (value === null || value === undefined || value === '') return 'N/A';
-  if (value === 'N/A') return value;
-  
-  // Convert to number and check if it's valid
-  const num = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(num)) return value.toString();
-  
-  // Format with commas
-  return num.toLocaleString('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  });
+export const formatNumber = (num: number, isCurrency = false): string => {
+  if (num >= 1e12) {
+    return `${isCurrency ? '$' : ''}${(num / 1e12).toFixed(2)}T`;
+  } else if (num >= 1e9) {
+    return `${isCurrency ? '$' : ''}${(num / 1e9).toFixed(2)}B`;
+  } else if (num >= 1e6) {
+    return `${isCurrency ? '$' : ''}${(num / 1e6).toFixed(2)}M`;
+  }
+  return `${isCurrency ? '$' : ''}${num.toFixed(2)}`;
 }; 
