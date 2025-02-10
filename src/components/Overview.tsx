@@ -381,11 +381,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData, ticker }) => {
   };
 
   return (
-    <Box sx={{ 
-      height: '100vh',
-      overflow: 'hidden',
-      paddingBottom: 0
-    }}>
+    <Box>
       {renderKeyStats()}
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
