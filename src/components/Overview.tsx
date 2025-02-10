@@ -4,6 +4,7 @@ import { FinancialData, ReportType } from '../types'
 import FinancialChart from './FinancialChart';
 import KeyStats from './KeyStats';
 import GrowthChart from './GrowthChart';
+import EPSChart from './EPSChart';
 
 // Add new interface for key stats
 interface KeyStats {
@@ -38,67 +39,6 @@ const Overview: React.FC<OverviewProps> = ({ financialData, ticker }) => {
 
     fetchKeyStats();
   }, [ticker]);
-
-  const renderEPSChart = (data: FinancialData | null) => {
-    if (!data) return null;
-    const columns = data.columns;
-
-    const basicEPS = data.data.find(row => {
-      const metric = row[columns[0]];
-      return typeof metric === 'string' && 
-        metric.toLowerCase().includes('basic eps');
-    });
-    const dilutedEPS = data.data.find(row => {
-      const metric = row[columns[0]];
-      return typeof metric === 'string' && 
-        metric.toLowerCase().includes('diluted eps');
-    });
-
-    if (!basicEPS || !dilutedEPS) return null;
-
-    // Use the same column reversal logic as the main chart
-    const years = data.columns.slice(1).reverse();
-
-    const chartData = {
-      labels: years,
-      datasets: [
-        {
-          type: 'bar' as const,
-          label: 'Basic EPS',
-          data: years.map(year => {
-            if(!basicEPS[year]) return 0
-            return parseFloat(basicEPS[year].toString().replace(/[^0-9.-]+/g, ''))
-          }),
-          backgroundColor: '#4287f5', // Solid blue color
-          borderColor: '#4287f5',
-          borderWidth: 0, // Remove border
-          borderRadius: 4, // Rounded corners
-        },
-        {
-          type: 'bar' as const,
-          label: 'Diluted EPS',
-          data: years.map(year => {
-            if(!dilutedEPS[year]) return 0
-            return parseFloat(dilutedEPS[year].toString().replace(/[^0-9.-]+/g, ''))
-          }),
-          backgroundColor: '#63e6e2', // Solid turquoise color
-          borderColor: '#63e6e2',
-          borderWidth: 0, // Remove border
-          borderRadius: 4, // Rounded corners
-        },
-      ],
-    };
-
-    return (
-      <FinancialChart
-        title="Earnings Per Share"
-        labels={years}
-        datasets={chartData.datasets}
-        yAxisConfig={{ formatAsCurrency: true, showPercentage: false }}
-        yAxisFormat={(value) => `$${value.toFixed(2)}`}
-      />
-    );
-  };
 
   const renderDebtCoverageChart = (balanceSheet: FinancialData | null, cashFlow: FinancialData | null) => {
     if (!balanceSheet || !cashFlow) return null;
@@ -206,7 +146,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData, ticker }) => {
           <GrowthChart data={financialData.income_statement} />
         </Grid>
         <Grid item xs={12} md={6}>
-          {renderEPSChart(financialData.income_statement)}
+          <EPSChart data={financialData.income_statement} />
         </Grid>
         <Grid item xs={12} md={6}>
           {renderDebtCoverageChart(financialData.balance_sheet, financialData.cash_flow)}
