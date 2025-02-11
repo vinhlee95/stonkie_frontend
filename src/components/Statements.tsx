@@ -27,7 +27,13 @@ const Statements: React.FC<StatementsProps> = ({ financialData }) => {
 
     const formatCellValue = (value: any, column: string): string => {
       if (column === data.columns[0]) return value;
-      if(!value || typeof value !== 'number') return 'N/A';
+      if(!value) return 'N/A';
+      if (typeof value === 'string') {
+        const cleanValue = value.replace(/[^0-9.-]+/g, '');
+        if (!cleanValue) return 'N/A';
+        return formatNumber(parseFloat(cleanValue));
+      }
+      
       return formatNumber(value);
     };
 
