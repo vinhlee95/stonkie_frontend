@@ -4,6 +4,7 @@ import Overview from './Overview';
 import Statements from './Statements';
 import { Box, Tab, Tabs, CircularProgress } from '@mui/material';
 import { FinancialData, ReportType } from '../types';
+import Revenue from './Revenue';
 
 interface TickerDetailProps {
   defaultTab: 'overview' | 'statements' | 'revenue';
@@ -101,7 +102,7 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
         <Statements financialData={financialData} />
       )}
       {value === 'revenue' && financialData && (
-        <p>Revenue</p>
+        <Revenue financialData={financialData} />
       )}
     </Box>
   );
