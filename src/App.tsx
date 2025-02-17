@@ -200,6 +200,17 @@ const App: React.FC = () => {
                 setCurrentTicker={setTicker}
               />} 
             />
+            <Route 
+              path="/tickers/:ticker/revenue" 
+              element={<TickerDetail 
+                defaultTab="revenue" 
+                financialData={financialData}
+                fetchFinancialData={fetchFinancialData}
+                loading={loading}
+                error={error}
+                setCurrentTicker={setTicker}
+              />} 
+            />
           </Routes>
 
           <Box

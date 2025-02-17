@@ -6,7 +6,7 @@ import { Box, Tab, Tabs, CircularProgress } from '@mui/material';
 import { FinancialData, ReportType } from '../types';
 
 interface TickerDetailProps {
-  defaultTab: 'overview' | 'statements';
+  defaultTab: 'overview' | 'statements' | 'revenue';
   fetchFinancialData: (ticker: string, reportTypes?: ReportType[]) => Promise<any>;
   financialData: Record<ReportType, FinancialData | null>;
   loading: boolean;
@@ -21,10 +21,9 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
   const isFetchingRef = useRef(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    if(newValue !== 'overview' && newValue !== 'statements') {
+    if(newValue !== 'overview' && newValue !== 'statements' && newValue !== 'revenue') {
       return
     }
-    
     setValue(newValue);
     navigate(`/tickers/${ticker}/${newValue}`);
   };
@@ -92,6 +91,7 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
       >
         <Tab value="overview" label="Overview" />
         <Tab value="statements" label="Financial Statements" />
+        <Tab value="revenue" label="Revenue" />
       </Tabs>
 
       {value === 'overview' && financialData && ticker && (
@@ -99,6 +99,9 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
       )}
       {value === 'statements' && financialData && (
         <Statements financialData={financialData} />
+      )}
+      {value === 'revenue' && financialData && (
+        <p>Revenue</p>
       )}
     </Box>
   );
