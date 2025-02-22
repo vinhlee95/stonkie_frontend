@@ -1,6 +1,16 @@
-import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from "chart.js"
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  type ChartOptions,
+} from "chart.js"
 import { Bar } from "react-chartjs-2"
 
+// Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 interface BreakdownItem {
@@ -19,93 +29,62 @@ interface RevenueChartProps {
 }
 
 export default function RevenueChart({ revenueData }: RevenueChartProps) {
+  const years = revenueData.map((item) => item.year.toString())
+
   // Transform data for Chart.js
-  const years = revenueData.map((data) => data.year.toString())
-  
-  // Get unique labels from all breakdowns
-  const labels = Array.from(
-    new Set(revenueData.flatMap((data) => data.breakdown.map((item) => item.label)))
-  )
+  const datasets = revenueData[0].breakdown.map((_, index) => {
+    return {
+      label: revenueData[0].breakdown[index].label,
+      data: revenueData.map((item) => item.breakdown[index].revenue / 1e6), // Convert to billions
+      backgroundColor: index === 0 ? "rgb(82, 130, 255)" : "rgb(99, 205, 255)",
+      borderWidth: 0,
+      borderSkipped: false,
+      borderRadius: index === revenueData[0].breakdown.length - 1 ? 4 : 0,
+    }
+  })
 
-  // Prepare datasets
-  const datasets = labels.map((label, index) => ({
-    label,
-    data: revenueData.map((yearData) => {
-      const item = yearData.breakdown.find((b) => b.label === label)
-      return item?.revenue ?? 0
-    }),
-    backgroundColor: index === 0 ? "rgb(99, 132, 255)" : "rgb(72, 202, 228)",
-    borderColor: "transparent",
-  }))
-
-  const options = {
+  const options: ChartOptions<"bar"> = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
       x: {
         stacked: true,
         grid: {
-          display: true,
-          color: "rgba(255, 255, 255, 0.1)",
+          display: false,
+        },
+        border: {
+          display: false,
         },
         ticks: {
-          color: "white",
-          font: {
-            size: 14,
-          },
-        },
-        title: {
-          display: true,
-          text: 'Year',
-          color: 'white',
-          font: {
-            size: 14,
-          },
+          color: "#333",
         },
       },
       y: {
         stacked: true,
         grid: {
-          display: true,
-          color: "rgba(255, 255, 255, 0.1)",
+          color: "rgba(0, 0, 0, 0.1)",
+        },
+        border: {
+          display: false,
         },
         ticks: {
-          color: "white",
-          callback: (value: number) => `$${value.toFixed(2)}B`,
-          font: {
-            size: 14,
-          },
-        },
-        title: {
-          display: true,
-          text: 'Revenue (Billion USD)',
-          color: 'white',
-          font: {
-            size: 14,
-          },
+          color: "#333",
+          callback: (value) => `${value}B`,
         },
       },
     },
     plugins: {
       legend: {
-        position: "top" as const,
-        labels: {
-          color: "white",
-          padding: 20,
-          font: {
-            size: 14,
-          },
-        },
+        display: false,
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => {
-            const value = context.parsed.y
-            const percentage = revenueData[context.dataIndex]?.breakdown
-              .find((b) => b.label === context.dataset.label)?.percentage ?? 0
-            return `${context.dataset.label}: ${value.toFixed(2)}B USD (${percentage.toFixed(1)}%)`
-          },
+          label: (context) => `${context.dataset.label}: ${context.parsed.y}B`,
         },
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        padding: 12,
+        titleColor: "rgb(255, 255, 255)",
+        bodyColor: "rgb(255, 255, 255)",
       },
     },
   }
@@ -116,8 +95,6 @@ export default function RevenueChart({ revenueData }: RevenueChartProps) {
   }
 
   return (
-    <div className="w-full h-[400px] bg-black p-4">
-      <Bar options={options as any} data={data} />
-    </div>
+    <Bar options={options} data={data} />
   )
 }

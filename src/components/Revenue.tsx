@@ -69,6 +69,7 @@ const Revenue = ({ financialData }: RevenueProps) => {
       percentage: item.percentage
     }))
   }))
+
   console.log(productRevenueData)
 
   return (
