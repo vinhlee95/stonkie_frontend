@@ -31,12 +31,24 @@ interface RevenueChartProps {
 export default function RevenueChart({ revenueData }: RevenueChartProps) {
   const years = revenueData.map((item) => item.year.toString())
 
+  // Color palette for different labels
+  const colors = [
+    'rgb(82, 130, 255)',   // Blue
+    'rgb(99, 205, 255)',   // Light Blue
+    'rgb(255, 99, 132)',   // Pink
+    'rgb(75, 192, 192)',   // Teal
+    'rgb(255, 159, 64)',   // Orange
+    'rgb(153, 102, 255)',  // Purple
+    'rgb(255, 205, 86)',   // Yellow
+    'rgb(201, 203, 207)'   // Gray
+  ]
+
   // Transform data for Chart.js
   const datasets = revenueData[0].breakdown.map((_, index) => {
     return {
       label: revenueData[0].breakdown[index].label,
       data: revenueData.map((item) => item.breakdown[index].revenue / 1e6), // Convert to billions
-      backgroundColor: index === 0 ? "rgb(82, 130, 255)" : "rgb(99, 205, 255)",
+      backgroundColor: colors[index % colors.length],
       borderWidth: 0,
       borderSkipped: false,
       borderRadius: index === revenueData[0].breakdown.length - 1 ? 4 : 0,

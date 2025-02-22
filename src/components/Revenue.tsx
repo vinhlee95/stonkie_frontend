@@ -59,7 +59,7 @@ const Revenue = ({ financialData }: RevenueProps) => {
   }, [ticker]);
 
   if (isLoading) return <div>Loading...</div>;
-  if (!revenueData) return <div>No data available</div>;
+  if (!revenueData || revenueData.length === 0) return <div>No data available</div>;
   
   const productRevenueData = revenueData.map(data => ({
     year: data.year,
@@ -69,8 +69,6 @@ const Revenue = ({ financialData }: RevenueProps) => {
       percentage: item.percentage
     }))
   }))
-
-  console.log(productRevenueData)
 
   return (
     <div className="revenue-charts">
