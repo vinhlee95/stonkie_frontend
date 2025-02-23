@@ -47,7 +47,7 @@ export default function RevenueChart({ revenueData }: RevenueChartProps) {
   const datasets = revenueData[0].breakdown.map((_, index) => {
     return {
       label: revenueData[0].breakdown[index].label,
-      data: revenueData.map((item) => item.breakdown[index].revenue / 1e6), // Convert to billions
+      data: revenueData.map((item) => Number(item.breakdown[index].revenue / 1e6).toFixed(0)), // Convert to billions
       backgroundColor: colors[index % colors.length],
       borderWidth: 0,
       borderSkipped: false,

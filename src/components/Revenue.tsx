@@ -68,7 +68,7 @@ const Revenue = ({ financialData }: RevenueProps) => {
       revenue: item.revenue,
       percentage: item.percentage
     }))
-  }))
+  })).sort((a, b) => a.year - b.year)
 
   return (
     <div className="revenue-charts">
