@@ -1,8 +1,8 @@
 import { RevenueData } from "../types";
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import RevenueChart from "./RevenueData";
-import RevenueTable from "./RevenueTable";
+import RevenueChart from "./revenue/RevenueChart";
+import RevenueTable from "./revenue/RevenueTable";
 import { Typography } from '@mui/material';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
