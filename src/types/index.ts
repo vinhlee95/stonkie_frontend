@@ -8,4 +8,22 @@ export interface FinancialResponse {
   error?: string;
 }
 
-export type ReportType = 'income_statement' | 'balance_sheet' | 'cash_flow'; 
+export type ReportType = 'income_statement' | 'balance_sheet' | 'cash_flow';
+
+export interface ProductRevenueBreakdown {
+  product: string;
+  revenue: number;
+  percentage: number;
+}
+
+export interface RegionRevenueBreakdown {
+  region: string;
+  revenue: number;
+  percentage: number;
+}
+
+export interface RevenueData {
+  year: number;
+  product_breakdown: ProductRevenueBreakdown[];
+  region_breakdown: RegionRevenueBreakdown[];
+}
