@@ -23,7 +23,7 @@ const RevenueTable: React.FC<RevenueTableProps> = ({ revenueData }) => {
   );
 
   return (
-    <Box sx={{ mt: 4 }}>
+    <Box sx={{ mt: 2 }}>
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>

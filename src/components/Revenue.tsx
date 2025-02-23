@@ -46,6 +46,15 @@ const Revenue = () => {
     }))
   })).sort((a, b) => a.year - b.year)
 
+  const regionRevenueData = revenueData.map(data => ({
+    year: data.year,
+    breakdown: data.region_breakdown.map(item => ({
+      label: item.region,
+      revenue: item.revenue,
+      percentage: item.percentage
+    }))
+  })).sort((a, b) => a.year - b.year)
+
   return (
     <div className="revenue-charts">
       <Typography variant="h5" sx={{ mb: 2 }}>
@@ -54,10 +63,13 @@ const Revenue = () => {
       <Typography variant="body1" sx={{ mb: 2 }}>
         All numbers are in billions of USD.
       </Typography>
-      <div>
-        <RevenueChart revenueData={productRevenueData} />
-      </div>
+      <RevenueChart revenueData={productRevenueData} />
       <RevenueTable revenueData={productRevenueData} />
+      <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>
+        Region Breakdown
+      </Typography>
+      <RevenueChart revenueData={regionRevenueData} />
+      <RevenueTable revenueData={regionRevenueData} />
     </div>
   );
 };

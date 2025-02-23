@@ -107,6 +107,8 @@ export default function RevenueChart({ revenueData }: RevenueChartProps) {
   }
 
   return (
-    <Bar options={options} data={data} />
+    <div>
+      <Bar options={options} data={data} />
+    </div>
   )
 }
