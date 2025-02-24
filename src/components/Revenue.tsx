@@ -148,20 +148,25 @@ const Revenue = () => {
   return (
     <div className="revenue-charts">
       <Typography variant="h5" sx={{ mb: 2 }}>
-        Revenue Breakdown
-      </Typography>
-      <Typography variant="body1" sx={{ mb: 2 }}>
-        All numbers are in billions of USD.
+        By product category
       </Typography>
       {renderInsights(revenueInsightData?.filter(item => item.type === 'product'))}
-      <RevenueChart revenueData={productRevenueData} />
-      <RevenueTable revenueData={productRevenueData} />
+      <Box sx={{ mt: 4 }}>
+        <RevenueChart revenueData={productRevenueData} />
+      </Box>
+      <Box sx={{ mt: 4 }}>
+        <RevenueTable revenueData={productRevenueData} />
+      </Box>
       <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>
-        Region Breakdown
+        By geographic
       </Typography>
       {renderInsights(revenueInsightData?.filter(item => item.type === 'region'))}
-      <RevenueChart revenueData={regionRevenueData} />
-      <RevenueTable revenueData={regionRevenueData} />
+      <Box sx={{ mt: 4 }}>
+        <RevenueChart revenueData={regionRevenueData} />
+      </Box>
+      <Box sx={{ mt: 4 }}>
+        <RevenueTable revenueData={regionRevenueData} />
+      </Box>
     </div>
   );
 };
