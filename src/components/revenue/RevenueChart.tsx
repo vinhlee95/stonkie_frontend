@@ -9,6 +9,7 @@ import {
   type ChartOptions,
 } from "chart.js"
 import { Bar } from "react-chartjs-2"
+import { useTheme } from '@mui/material/styles';
 
 // Register ChartJS components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
@@ -29,6 +30,7 @@ interface RevenueChartProps {
 }
 
 export default function RevenueChart({ revenueData }: RevenueChartProps) {
+  const theme = useTheme();
   const years = revenueData.map((item) => item.year.toString())
 
   // Color palette for different labels
@@ -68,19 +70,19 @@ export default function RevenueChart({ revenueData }: RevenueChartProps) {
           display: false,
         },
         ticks: {
-          color: "#333",
+          color: theme.palette.text.primary,
         },
       },
       y: {
         stacked: true,
         grid: {
-          color: "rgba(0, 0, 0, 0.1)",
+          color: theme.palette.divider,
         },
         border: {
           display: false,
         },
         ticks: {
-          color: "#333",
+          color: theme.palette.text.primary,
           callback: (value) => `${value}B`,
         },
       },
@@ -93,10 +95,10 @@ export default function RevenueChart({ revenueData }: RevenueChartProps) {
         callbacks: {
           label: (context) => `${context.dataset.label}: ${context.parsed.y}B`,
         },
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.8)',
         padding: 12,
-        titleColor: "rgb(255, 255, 255)",
-        bodyColor: "rgb(255, 255, 255)",
+        titleColor: theme.palette.text.primary,
+        bodyColor: theme.palette.text.primary,
       },
     },
   }
