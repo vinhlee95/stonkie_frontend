@@ -4,37 +4,32 @@ import { useParams } from "react-router-dom";
 import RevenueChart from "./revenue/RevenueChart";
 import RevenueTable from "./revenue/RevenueTable";
 import { Typography } from '@mui/material';
+import { useQuery } from "@tanstack/react-query";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
 
+const fetchRevenueData = async (ticker: string | undefined) => {
+  if(!ticker) {
+    throw new Error('Ticker is required')
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/companies/${ticker}/revenue`);
+    const { data }: { data: RevenueData[] } = await response.json();
+    return data
+  } catch (error) {
+    console.error('Error fetching revenue data:', error);
+  }
+}
+
 const Revenue = () => {
-  const [revenueData, setRevenueData] = useState<RevenueData[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const fetchDataRef = useRef<boolean>(false);
   const { ticker } = useParams();
+  const {data: revenueData, error, isLoading} = useQuery({
+    queryKey: ['revenue', ticker],
+    queryFn: () => fetchRevenueData(ticker),
+    staleTime: 1000 * 60 * 5, // cache the data for 5 minutes
+  })
 
-  useEffect(() => {
-    const fetchRevenueData = async () => {
-      if (fetchDataRef.current) return;
-      fetchDataRef.current = true;
-      setIsLoading(true);
-
-      try {
-        const response = await fetch(`${BACKEND_URL}/api/companies/${ticker}/revenue`);
-        const { data }: { data: RevenueData[] } = await response.json();
-        setRevenueData(data);
-      } catch (error) {
-        console.error('Error fetching revenue data:', error);
-      } finally {
-        setIsLoading(false);
-        fetchDataRef.current = false;
-      }
-    };
-
-    fetchRevenueData();
-  }, [ticker]);
-
-  if (isLoading) return <div>Loading...</div>;
   if (!revenueData || revenueData.length === 0) return <div>No data available</div>;
   
   const productRevenueData = revenueData.map(data => ({
