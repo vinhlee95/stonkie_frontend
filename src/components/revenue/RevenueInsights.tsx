@@ -1,8 +1,13 @@
+import React from 'react'
 import { Typography, Box, Paper, Skeleton, IconButton } from '@mui/material';
 import { RevenueInsight } from '../../types';
 import { useState, useRef, useEffect } from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 interface RevenueInsightsProps {
@@ -72,10 +77,29 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
             justifyContent: 'center',
             bgcolor: 'background.paper',
             border: '1px solid',
-            borderColor: 'divider',
+            borderColor: 'primary.light',
+            position: 'relative',
+            overflow: 'hidden',
+            background: 'linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%)',
           }}
         >
+          {/* Background decoration */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: -10,
+              right: -10,
+              opacity: 0.04,
+            }}
+          >
+            <TipsAndUpdatesIcon sx={{ fontSize: 100 }} />
+          </Box>
+          {/* Skeleton content */}
           <Box sx={{ width: '100%' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, gap: 1 }}>
+              <Skeleton variant="circular" width={20} height={20} />
+              <Skeleton variant="text" width={100} />
+            </Box>
             <Skeleton variant="text" width="85%" height={24} sx={{ mb: 1 }} />
             <Skeleton variant="text" width="100%" />
             <Skeleton variant="text" width="90%" />
@@ -89,9 +113,6 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
 
   return (
     <div>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        💡 Insights
-      </Typography>
       <Box sx={{ 
         width: '100%',
         position: 'relative',
@@ -142,23 +163,85 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
                 justifyContent: 'center',
                 bgcolor: 'background.paper',
                 border: '1px solid',
-                borderColor: 'divider',
+                borderColor: 'primary.light',
+                position: 'relative',
+                overflow: 'hidden',
+                background: 'linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%)',
                 '&:hover': {
                   boxShadow: 6,
                   transform: 'translateY(-2px)',
                   transition: 'all 0.2s ease-in-out',
-                  borderColor: 'primary.main'
+                  borderColor: 'primary.main',
+                  '& .MuiSvgIcon-root.card-icon': {
+                    transform: 'rotate(10deg) scale(1.1)',
+                    color: 'primary.main',
+                  }
                 }
               }}
             >
+              {/* Background decoration */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: -10,
+                  right: -10,
+                  opacity: 0.06,
+                  transform: 'rotate(-15deg)',
+                  transition: 'all 0.3s ease-in-out',
+                }}
+              >
+                {[TipsAndUpdatesIcon, AutoGraphIcon, TimelineIcon, ShowChartIcon][index % 4] && 
+                  React.createElement([TipsAndUpdatesIcon, AutoGraphIcon, TimelineIcon, ShowChartIcon][index % 4], {
+                    sx: { fontSize: 100 },
+                    className: 'card-icon'
+                  })
+                }
+              </Box>
+              {/* Card content */}
+              <Box sx={{ 
+                position: 'relative',
+                zIndex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+                justifyContent: 'center'
+              }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  mb: 1,
+                  gap: 1
+                }}>
+                  <TipsAndUpdatesIcon 
+                    sx={{ 
+                      color: 'primary.main',
+                      fontSize: 20
+                    }} 
+                  />
+                  <Typography 
+                    variant="subtitle2" 
+                    sx={{ 
+                      color: 'primary.main',
+                      fontWeight: 600,
+                      letterSpacing: 0.5
+                    }}
+                  >
+                    AI Insights
+                  </Typography>
+                </Box>
               <Typography 
                 variant="body1" 
                 sx={{
-                  whiteSpace: { md: 'normal' }
+                  whiteSpace: { md: 'normal' },
+                  color: 'text.primary',
+                  lineHeight: 1.6,
+                  fontWeight: 400,
+                  letterSpacing: 0.2,
                 }}
               >
                 {item.insight}
               </Typography>
+              </Box>
             </Paper>
           </Box>
         ))}
