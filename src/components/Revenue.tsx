@@ -2,7 +2,7 @@ import { RevenueData, RevenueInsight } from "../types";
 import { useParams } from "react-router-dom";
 import RevenueChart from "./revenue/RevenueChart";
 import RevenueTable from "./revenue/RevenueTable";
-import { Typography, Box, Paper } from '@mui/material';
+import { Typography, Box, Paper, CircularProgress } from '@mui/material';
 import { useQuery } from "@tanstack/react-query";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
@@ -37,7 +37,7 @@ const fetchRevenueInsights = async (ticker: string | undefined) => {
 
 const Revenue = () => {
   const { ticker } = useParams();
-  const {data: revenueData} = useQuery({
+  const {data: revenueData, isLoading} = useQuery({
     queryKey: ['revenue', ticker],
     queryFn: () => fetchRevenueData(ticker),
     staleTime: 1000 * 60 * 5, // cache the data for 5 minutes
@@ -48,6 +48,8 @@ const Revenue = () => {
     queryFn: () => fetchRevenueInsights(ticker),
     staleTime: 1000 * 60 * 60, // cache the data for 1 hour
   })
+
+  if(isLoading) return <CircularProgress size={24} color="inherit" />
   
   if (!revenueData || revenueData.length === 0) return <div>No data available</div>;
 
