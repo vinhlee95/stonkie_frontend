@@ -1,5 +1,8 @@
-import { Typography, Box, Paper, Skeleton } from '@mui/material';
+import { Typography, Box, Paper, Skeleton, IconButton } from '@mui/material';
 import { RevenueInsight } from '../../types';
+import { useState, useRef, useEffect } from 'react';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 interface RevenueInsightsProps {
   insights: RevenueInsight[] | undefined;
@@ -7,27 +10,66 @@ interface RevenueInsightsProps {
 }
 
 export default function RevenueInsights({ insights, isLoading }: RevenueInsightsProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (insights && currentIndex < insights.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (containerRef.current && insights) {
+      // Each card takes up 100% of container width
+      const containerWidth = containerRef.current.offsetWidth;
+      containerRef.current.scrollTo({
+        left: currentIndex * containerWidth,
+        behavior: 'smooth'
+      });
+    }
+  }, [currentIndex, insights]);
+
+  // Reset index when insights change
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [insights]);
+
   const renderSkeletons = () => (
     Array(4).fill(0).map((_, index) => (
-      <Paper
+      <Box 
         key={`skeleton-${index}`}
-        elevation={2}
-        sx={{
-          p: 3,
-          borderRadius: 2,
-          minWidth: '300px',
-          maxWidth: '400px',
-          flex: '0 0 auto',
-          bgcolor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
+        sx={{ 
+          width: '100%',
+          flex: '0 0 100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
-        <Skeleton variant="text" width="60%" height={24} sx={{ mb: 1 }} />
-        <Skeleton variant="text" width="100%" />
-        <Skeleton variant="text" width="100%" />
-        <Skeleton variant="text" width="80%" />
-      </Paper>
+        <Paper
+          elevation={2}
+          sx={{
+            p: 3,
+            borderRadius: 2,
+            width: '90%',
+            bgcolor: 'background.paper',
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Skeleton variant="text" width="60%" height={24} sx={{ mb: 1 }} />
+          <Skeleton variant="text" width="100%" />
+          <Skeleton variant="text" width="100%" />
+          <Skeleton variant="text" width="80%" />
+        </Paper>
+      </Box>
     ))
   )
 
@@ -36,55 +78,44 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
       <Typography variant="h6" sx={{ mb: 2 }}>
         💡 Insights
       </Typography>
+      <Box sx={{ 
+        width: '100%',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
       <Box
+        ref={containerRef}
         sx={{
           display: 'flex',
-          gap: 2,
           overflowX: 'auto',
           pb: 2,
           scrollBehavior: 'smooth',
           position: 'relative',
-          '&::after': {
-            content: '""',
-            position: 'absolute',
-            right: 0,
-            top: 0,
-            bottom: 8,
-            width: '60px',
-            background: 'linear-gradient(to right, transparent, background.paper)',
-            pointerEvents: 'none',
-            zIndex: 1
+          msOverflowStyle: 'none',  // Hide scrollbar in IE/Edge
+          scrollbarWidth: 'none',   // Hide scrollbar in Firefox
+          '&::-webkit-scrollbar': { // Hide scrollbar in Chrome/Safari
+            display: 'none'
           },
-          '::-webkit-scrollbar': {
-            height: 8,
-            bgcolor: 'background.paper',
-            borderRadius: 4,
-          },
-          '::-webkit-scrollbar-thumb': {
-            bgcolor: 'grey.400',
-            borderRadius: 2,
-            '&:hover': {
-              bgcolor: 'grey.500'
-            }
-          },
-          '::-webkit-scrollbar-track': {
-            bgcolor: 'grey.100',
-            borderRadius: 4
-          },
-          mx: -2, // Negative margin to allow full-width scrolling
-          px: 2, // Padding to offset negative margin
+          width: '100%'
         }}
       >
         {isLoading ? renderSkeletons() : insights?.map((item, index) => (
+          <Box 
+            key={index} 
+            sx={{ 
+              width: '100%',
+              flex: '0 0 100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
           <Paper
-            key={index}
             elevation={2}
             sx={{
               p: 3,
               borderRadius: 2,
-              minWidth: '300px',
-              maxWidth: '400px',
-              flex: '0 0 auto',
+              width: '90%',
               bgcolor: 'background.paper',
               border: '1px solid',
               borderColor: 'divider',
@@ -100,8 +131,69 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
               {item.insight}
             </Typography>
           </Paper>
+          </Box>
         ))}
       </Box>
+      </Box>
+      {insights && insights.length > 0 && (
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          gap: 2, 
+          mt: 1
+        }}>
+          <IconButton 
+            onClick={handlePrevious}
+            disabled={currentIndex === 0}
+            sx={{ 
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'divider',
+              width: 32,
+              height: 32,
+              p: 0.5,
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                bgcolor: 'action.hover',
+                transform: 'scale(1.1)'
+              },
+              '&:disabled': {
+                opacity: 0.5,
+                bgcolor: 'action.disabledBackground'
+              }
+            }}
+          >
+            <ChevronLeftIcon fontSize="small" />
+          </IconButton>
+          <Typography variant="body2" color="text.secondary" sx={{ minWidth: 40, textAlign: 'center' }}>
+            {currentIndex + 1} / {insights.length}
+          </Typography>
+          <IconButton 
+            onClick={handleNext}
+            disabled={currentIndex === insights.length - 1}
+            sx={{ 
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'divider',
+              width: 32,
+              height: 32,
+              p: 0.5,
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                bgcolor: 'action.hover',
+                transform: 'scale(1.1)'
+              },
+              '&:disabled': {
+                opacity: 0.5,
+                bgcolor: 'action.disabledBackground'
+              }
+            }}
+          >
+            <ChevronRightIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      )}
     </div>
   );
 }
