@@ -29,6 +29,9 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
     navigate(`/tickers/${ticker}/${newValue}`);
   };
 
+  // Revenue tab does not need data from financial statements
+  const isTabUsingFinancialStatementData = value === 'overview' || value === 'statements'
+
   // Fetch financial data if not already fetched
   useEffect(() => {
     const fetchData = async () => {
@@ -36,7 +39,8 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
           !financialData?.balance_sheet && 
           !financialData?.cash_flow && 
           ticker && !error && 
-          !isFetchingRef.current) {
+          !isFetchingRef.current && 
+          isTabUsingFinancialStatementData) {
         try {
           isFetchingRef.current = true;
           await fetchFinancialData(ticker);
@@ -53,7 +57,7 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
 
   useEffect(() => {
     const refetchData = async () => {
-      if(ticker && !isFetchingRef.current) {
+      if(ticker && !isFetchingRef.current && isTabUsingFinancialStatementData) {
         try {
           isFetchingRef.current = true;
           await fetchFinancialData(ticker)
