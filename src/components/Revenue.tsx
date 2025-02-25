@@ -2,7 +2,7 @@ import { RevenueData, RevenueInsight } from "../types";
 import { useParams } from "react-router-dom";
 import RevenueChart from "./revenue/RevenueChart";
 import RevenueTable from "./revenue/RevenueTable";
-import { Typography, Box, Paper, CircularProgress } from '@mui/material';
+import { Typography, Box, Paper, CircularProgress, Skeleton } from '@mui/material';
 import { useQuery } from "@tanstack/react-query";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
@@ -55,11 +55,36 @@ const Revenue = () => {
   if (!revenueData || revenueData.length === 0) return <div>No data available</div>;
 
   const renderInsights = (insights: RevenueInsight[] | undefined) => {
-    if(!insights) return null
+    const isLoading = !insights && isLoadingInsights
+
+    const renderSkeletons = () => (
+      Array(4).fill(0).map((_, index) => (
+        <Paper
+          key={`skeleton-${index}`}
+          elevation={2}
+          sx={{
+            p: 3,
+            borderRadius: 2,
+            minWidth: '300px',
+            maxWidth: '400px',
+            flex: '0 0 auto',
+            bgcolor: 'background.paper',
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Skeleton variant="text" width="60%" height={24} sx={{ mb: 1 }} />
+          <Skeleton variant="text" width="100%" />
+          <Skeleton variant="text" width="100%" />
+          <Skeleton variant="text" width="80%" />
+        </Paper>
+      ))
+    )
+
     return (
       <div>
         <Typography variant="h6" sx={{ mb: 2 }}>
-        💡 Insights {isLoadingInsights && <CircularProgress size={16} sx={{ ml: 1 }} />}
+        💡 Insights
         </Typography>
         <Box
           sx={{
@@ -100,7 +125,7 @@ const Revenue = () => {
             px: 2, // Padding to offset negative margin
           }}
         >
-          {insights.map((item, index) => (
+          {isLoading ? renderSkeletons() : insights?.map((item, index) => (
             <Paper
               key={index}
               elevation={2}
