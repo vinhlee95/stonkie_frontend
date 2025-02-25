@@ -13,7 +13,7 @@ const fetchRevenueData = async (ticker: string | undefined) => {
   }
 
   try {
-    const response = await fetch(`${BACKEND_URL}/api/companies/${ticker}/revenue`);
+    const response = await fetch(`${BACKEND_URL}/api/companies/${ticker}/revenue`)
     const { data }: { data: RevenueData[] } = await response.json();
     return data
   } catch (error) {
@@ -37,19 +37,20 @@ const fetchRevenueInsights = async (ticker: string | undefined) => {
 
 const Revenue = () => {
   const { ticker } = useParams();
-  const {data: revenueData, isLoading} = useQuery({
+  const {data: revenueData, isLoading: isLoadingRevenue} = useQuery({
     queryKey: ['revenue', ticker],
     queryFn: () => fetchRevenueData(ticker),
     staleTime: 1000 * 60 * 5, // cache the data for 5 minutes
   })
 
-  const {data: revenueInsightData} = useQuery({
+  const {data: revenueInsightData, isLoading: isLoadingInsights} = useQuery({
     queryKey: ['revenue_insights', ticker],
     queryFn: () => fetchRevenueInsights(ticker),
     staleTime: 1000 * 60 * 60, // cache the data for 1 hour
+    enabled: !!revenueData, // Only start fetching insights after revenue data is loaded
   })
 
-  if(isLoading) return <CircularProgress size={24} color="inherit" />
+  if(isLoadingRevenue) return <CircularProgress size={24} color="inherit" />
   
   if (!revenueData || revenueData.length === 0) return <div>No data available</div>;
 
@@ -58,7 +59,7 @@ const Revenue = () => {
     return (
       <div>
         <Typography variant="h6" sx={{ mb: 2 }}>
-        💡 Insights
+        💡 Insights {isLoadingInsights && <CircularProgress size={16} sx={{ ml: 1 }} />}
         </Typography>
         <Box
           sx={{
