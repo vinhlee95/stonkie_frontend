@@ -80,7 +80,9 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
             borderColor: 'primary.light',
             position: 'relative',
             overflow: 'hidden',
-            background: 'linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%)',
+            background: (theme) => theme.palette.mode === 'dark' 
+              ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)'
+              : 'linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%)',
           }}
         >
           {/* Background decoration */}
@@ -89,7 +91,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
               position: 'absolute',
               top: -10,
               right: -10,
-              opacity: 0.04,
+              opacity: (theme) => theme.palette.mode === 'dark' ? 0.1 : 0.04,
             }}
           >
             <TipsAndUpdatesIcon sx={{ fontSize: 100 }} />
@@ -166,7 +168,9 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
                 borderColor: 'primary.light',
                 position: 'relative',
                 overflow: 'hidden',
-                background: 'linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%)',
+                background: (theme) => theme.palette.mode === 'dark' 
+                  ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)'
+                  : 'linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%)',
                 '&:hover': {
                   boxShadow: 6,
                   transform: 'translateY(-2px)',
@@ -185,7 +189,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
                   position: 'absolute',
                   top: -10,
                   right: -10,
-                  opacity: 0.06,
+                  opacity: (theme) => theme.palette.mode === 'dark' ? 0.1 : 0.06,
                   transform: 'rotate(-15deg)',
                   transition: 'all 0.3s ease-in-out',
                 }}
