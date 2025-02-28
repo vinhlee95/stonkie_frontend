@@ -29,10 +29,46 @@ const fetchRevenueInsights = async (ticker: string | undefined) => {
 
   try {
     const response = await fetch(`${BACKEND_URL}/api/companies/${ticker}/revenue/insights`);
-    const { data }: { data: RevenueInsight[] } = await response.json();
-    return data
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+    const insights: RevenueInsight[] = [];
+    
+    if (!reader) throw new Error('Failed to get response reader');
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+      
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+          if (data === '[DONE]') break;
+          
+          const parsed = JSON.parse(data);
+          
+          if (parsed.status === 'error') {
+            throw new Error(parsed.error);
+          }
+          
+          if (parsed.status === 'success' && parsed.data) {
+            insights.push(parsed.data);
+          }
+          // Handle streaming updates if needed
+          if (parsed.status === 'streaming') {
+            console.log('Streaming update:', parsed.content);
+          }
+        }
+      }
+    }
+    
+    return insights;
   } catch (error) {
-    console.error('Error fetching revenue data:', error);
+    console.error('Error fetching revenue insights:', error);
+    throw error;
   }
 }
 
