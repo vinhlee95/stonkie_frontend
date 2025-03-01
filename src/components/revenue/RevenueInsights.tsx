@@ -26,10 +26,32 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
   };
 
   const mobileCardStyles = {
-    p: 2
+    p: 2,
+    maxHeight: '250px',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
   };
 
   const cardStyles = isMobile ? mobileCardStyles : desktopCardStyles;
+
+  const scrollableContentStyles = {
+    flex: 1,
+    overflow: 'auto',
+    '&::-webkit-scrollbar': {
+      width: '6px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: 'transparent',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      background: theme.palette.grey[300],
+      borderRadius: '3px',
+      '&:hover': {
+        background: theme.palette.grey[400],
+      },
+    },
+  };
 
   const renderPlaceholderCard = () => (
     <Paper
@@ -37,7 +59,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
       sx={cardStyles}
     >
       <Skeleton variant="text" width="80%" height={28} sx={{ mb: 2 }} />
-      <Box sx={{ flex: 1, overflow: 'auto' }}>
+      <Box sx={scrollableContentStyles}>
         <Skeleton variant="text" width="100%" height={24} />
         <Skeleton variant="text" width="90%" height={24} />
         <Skeleton variant="text" width="95%" height={24} />
@@ -52,23 +74,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
       elevation={2}
       sx={cardStyles}
     >
-      <Box sx={{ 
-        flex: 1,
-        overflow: 'auto',
-        '&::-webkit-scrollbar': {
-          width: '6px',
-        },
-        '&::-webkit-scrollbar-track': {
-          background: 'transparent',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          background: theme.palette.grey[300],
-          borderRadius: '3px',
-          '&:hover': {
-            background: theme.palette.grey[400],
-          },
-        },
-      }}>
+      <Box sx={scrollableContentStyles}>
         <Typography 
           sx={{ 
             fontSize: '1rem',
