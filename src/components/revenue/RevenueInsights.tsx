@@ -7,7 +7,9 @@ import { Pagination } from 'swiper/modules';
 import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import AirlineSeatFlatSharpIcon from '@mui/icons-material/AirlineSeatFlatSharp'
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
+import { useMemo } from 'react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -63,38 +65,38 @@ export default function RevenueInsights({ insights }: RevenueInsightsProps) {
     },
   };
 
-  const backgroundIcons = [
-    TipsAndUpdatesOutlinedIcon,
+  const positions = useMemo(() => [
+    // Bottom right
+    { right: -20, bottom: -20, left: 'auto', top: 'auto', rotate: -15 },
+    { right: -30, bottom: -10, left: 'auto', top: 'auto', rotate: -25 },
+    // Top right
+    { right: -25, top: -20, left: 'auto', bottom: 'auto', rotate: 15 },
+    { right: -15, top: -25, left: 'auto', bottom: 'auto', rotate: 25 },
+    // Bottom left
+    { left: -20, bottom: -20, right: 'auto', top: 'auto', rotate: 15 },
+    { left: -25, bottom: -15, right: 'auto', top: 'auto', rotate: 25 },
+    // Top left
+    { left: -15, top: -20, right: 'auto', bottom: 'auto', rotate: -25 },
+    { left: -25, top: -15, right: 'auto', bottom: 'auto', rotate: -15 },
+  ], []);
+
+  const backgroundIcons = useMemo(() => [
     ShowChartIcon,
+    TipsAndUpdatesOutlinedIcon,
     TrendingUpIcon,
     MonetizationOnOutlinedIcon,
-  ];
+    AirlineSeatFlatSharpIcon
+  ], []);
 
-  const getRandomPosition = () => {
-    const positions = [
-      // Bottom right
-      { right: -20, bottom: -20, left: 'auto', top: 'auto', rotate: -15 },
-      { right: -30, bottom: -10, left: 'auto', top: 'auto', rotate: -25 },
-      // Top right
-      { right: -25, top: -20, left: 'auto', bottom: 'auto', rotate: 15 },
-      { right: -15, top: -25, left: 'auto', bottom: 'auto', rotate: 25 },
-      // Bottom left
-      { left: -20, bottom: -20, right: 'auto', top: 'auto', rotate: 15 },
-      { left: -25, bottom: -15, right: 'auto', top: 'auto', rotate: 25 },
-      // Top left
-      { left: -15, top: -20, right: 'auto', bottom: 'auto', rotate: -25 },
-      { left: -25, top: -15, right: 'auto', bottom: 'auto', rotate: -15 },
-    ];
-    return positions[Math.floor(Math.random() * positions.length)];
-  };
+  const getPositionAndIcon = useMemo(() => (index: number) => {
+    return {
+      position: positions[index],
+      Icon: backgroundIcons[index],
+    };
+  }, [positions, backgroundIcons]);
 
-  const getRandomIcon = () => {
-    return backgroundIcons[Math.floor(Math.random() * backgroundIcons.length)];
-  };
-
-  const renderPlaceholderCard = () => {
-    const position = getRandomPosition();
-    const Icon = getRandomIcon();
+  const renderPlaceholderCard = (index: number) => {
+    const { position, Icon } = getPositionAndIcon(index);
     return (
       <Paper
         elevation={1}
@@ -135,9 +137,8 @@ export default function RevenueInsights({ insights }: RevenueInsightsProps) {
     );
   };
 
-  const renderInsightCard = (insight: RevenueInsight) => {
-    const position = getRandomPosition();
-    const Icon = getRandomIcon();
+  const renderInsightCard = (insight: RevenueInsight, index: number) => {
+    const { position, Icon } = getPositionAndIcon(index);
     return (
       <Paper
         elevation={1}
@@ -196,12 +197,12 @@ export default function RevenueInsights({ insights }: RevenueInsightsProps) {
         >
           {!insights?.length ? (
             <SwiperSlide>
-              {renderPlaceholderCard()}
+              {renderPlaceholderCard(0)}
             </SwiperSlide>
           ) : (
             insights.map((insight, index) => (
               <SwiperSlide key={index}>
-                {renderInsightCard(insight)}
+                {renderInsightCard(insight, index)}
               </SwiperSlide>
             ))
           )}
@@ -241,7 +242,7 @@ export default function RevenueInsights({ insights }: RevenueInsightsProps) {
           const insight = insights?.[i];
           return (
             <Box key={i}>
-              {insight ? renderInsightCard(insight) : renderPlaceholderCard()}
+              {insight ? renderInsightCard(insight, i) : renderPlaceholderCard(i)}
             </Box>
           );
         })}
