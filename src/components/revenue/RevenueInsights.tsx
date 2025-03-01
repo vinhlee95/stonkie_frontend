@@ -13,10 +13,9 @@ import 'swiper/css/pagination';
 
 interface RevenueInsightsProps {
   insights?: RevenueInsight[];
-  isLoading?: boolean;
 }
 
-export default function RevenueInsights({ insights, isLoading }: RevenueInsightsProps) {
+export default function RevenueInsights({ insights }: RevenueInsightsProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 

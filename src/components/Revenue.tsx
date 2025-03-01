@@ -26,7 +26,6 @@ const fetchRevenueData = async (ticker: string | undefined) => {
 const Revenue = () => {
   const { ticker } = useParams();
   const [streamingInsights, setStreamingInsights] = useState<RevenueInsight[]>([]);
-  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
 
   const {data: revenueData, isLoading: isLoadingRevenue} = useQuery({
     queryKey: ['revenue', ticker],
@@ -37,7 +36,6 @@ const Revenue = () => {
   useEffect(() => {
     if (!ticker || !revenueData) return;
 
-    setIsLoadingInsights(true);
     setStreamingInsights([]);
 
     const eventSource = new EventSource(`${BACKEND_URL}/api/companies/${ticker}/revenue/insights/product`);
@@ -45,7 +43,6 @@ const Revenue = () => {
     eventSource.onmessage = (event) => {
       if (event.data === '[DONE]') {
         eventSource.close();
-        setIsLoadingInsights(false);
         return;
       }
 
@@ -53,7 +50,6 @@ const Revenue = () => {
       
       if (data.status === 'error') {
         eventSource.close();
-        setIsLoadingInsights(false);
         console.error('Error fetching insights:', data.error);
         return;
       }
@@ -68,7 +64,6 @@ const Revenue = () => {
 
     eventSource.onerror = (error) => {
       eventSource.close();
-      setIsLoadingInsights(false);
       console.error('EventSource error:', error);
     };
 
@@ -104,7 +99,7 @@ const Revenue = () => {
       <Typography variant="h5" sx={{ mb: 2 }}>
         By product category
       </Typography>
-      <RevenueInsights insights={streamingInsights.filter(item => item.type === 'product')} isLoading={isLoadingInsights} />
+      <RevenueInsights insights={streamingInsights.filter(item => item.type === 'product')} />
       <Box sx={{ mt: 4 }}>
         <RevenueChart revenueData={productRevenueData} />
       </Box>
@@ -114,7 +109,7 @@ const Revenue = () => {
       <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>
         By geographic
       </Typography>
-      <RevenueInsights insights={streamingInsights.filter(item => item.type === 'region')} isLoading={isLoadingInsights} />
+      <RevenueInsights insights={streamingInsights.filter(item => item.type === 'region')} />
       <Box sx={{ mt: 4 }}>
         <RevenueChart revenueData={regionRevenueData} />
       </Box>
