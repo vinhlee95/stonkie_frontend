@@ -1,13 +1,9 @@
-import React from 'react'
 import { Typography, Box, Paper, Skeleton, IconButton, CircularProgress } from '@mui/material';
 import { RevenueInsight } from '../../types';
 import { useState, useRef, useEffect } from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import TimelineIcon from '@mui/icons-material/Timeline';
-import ShowChartIcon from '@mui/icons-material/ShowChart';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 interface RevenueInsightsProps {
@@ -33,17 +29,6 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
     }
   };
 
-  useEffect(() => {
-    if (containerRef.current && insights && isMobile) {
-      // Each card takes up 100% of container width
-      const containerWidth = containerRef.current.offsetWidth;
-      containerRef.current.scrollTo({
-        left: currentIndex * containerWidth,
-        behavior: 'smooth'
-      });
-    }
-  }, [currentIndex, insights, isMobile]);
-
   // Auto-advance to new insights as they arrive
   useEffect(() => {
     if (insights && insights.length > 0 && currentIndex === insights.length - 2) {
@@ -52,80 +37,137 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
   }, [insights?.length]);
 
   return (
-    <Box sx={{ position: 'relative', width: '100%' }}>
+    <Box sx={{ 
+      position: 'relative',
+      width: '100%',
+      height: { xs: 'auto', md: '300px' }, 
+      display: 'flex',
+      alignItems: 'center'
+    }}>
       <Box
         ref={containerRef}
         sx={{
           display: 'flex',
           gap: 2,
-          overflowX: isMobile ? 'auto' : 'visible',
+          height: '100%',
+          width: '100%',
+          overflowX: isMobile ? 'auto' : 'hidden', 
+          overflowY: 'hidden',
           scrollSnapType: 'x mandatory',
           '&::-webkit-scrollbar': { display: 'none' },
           msOverflowStyle: 'none',
           scrollbarWidth: 'none',
+          position: 'relative',
         }}
       >
-        {isLoading && insights?.length === 0 ? (
-          <Paper
-            elevation={2}
-            sx={{
-              p: 3,
-              minWidth: isMobile ? '100%' : 'auto',
-              flex: 1,
-              scrollSnapAlign: 'start',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <TipsAndUpdatesIcon sx={{ mr: 1 }} />
-              <Skeleton width={200} />
-            </Box>
-            <Skeleton />
-            <Skeleton />
-            <Skeleton />
-          </Paper>
-        ) : (
-          insights?.map((insight, index) => (
+        <Box sx={{
+          display: 'flex',
+          gap: 2,
+          transition: 'transform 0.3s ease',
+          transform: isMobile ? 'none' : `translateX(-${currentIndex * 42}%)`, 
+          width: isMobile ? 'auto' : 'fit-content',
+          height: '100%',
+        }}>
+          {isLoading && insights?.length === 0 ? (
             <Paper
-              key={index}
               elevation={2}
               sx={{
                 p: 3,
-                minWidth: isMobile ? '100%' : 'auto',
-                flex: 1,
+                width: isMobile ? '100%' : '40%',
+                minWidth: isMobile ? '100%' : '40%',
+                flex: isMobile ? 1 : 'none',
                 scrollSnapAlign: 'start',
-                opacity: currentIndex === index ? 1 : isMobile ? 1 : 0.6,
-                transform: currentIndex === index ? 'scale(1)' : isMobile ? 'scale(1)' : 'scale(0.95)',
-                transition: 'all 0.3s ease',
+                height: { xs: 'auto', md: '280px' },
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <TipsAndUpdatesIcon sx={{ mr: 1 }} />
-                <Typography variant="h6">Insight {index + 1}</Typography>
+                <Skeleton width={200} />
               </Box>
-              <Typography>{insight.insight}</Typography>
+              <Skeleton />
+              <Skeleton />
+              <Skeleton />
             </Paper>
-          ))
-        )}
-        
-        {isLoading && insights && insights.length > 0 && (
-          <Paper
-            elevation={2}
-            sx={{
-              p: 3,
-              minWidth: isMobile ? '100%' : 'auto',
-              flex: 1,
-              scrollSnapAlign: 'start',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <TipsAndUpdatesIcon sx={{ mr: 1 }} />
-              <Typography variant="h6">Generating more insights...</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 2 }}>
-              <CircularProgress size={24} />
-            </Box>
-          </Paper>
-        )}
+          ) : (
+            insights?.map((insight, index) => (
+              <Paper
+                key={index}
+                elevation={2}
+                sx={{
+                  p: 3,
+                  width: isMobile ? '100%' : '40%',
+                  minWidth: isMobile ? '100%' : '40%',
+                  flex: isMobile ? 1 : 'none',
+                  scrollSnapAlign: 'start',
+                  height: { xs: 'auto', md: '280px' },
+                  opacity: currentIndex === index ? 1 : isMobile ? 1 : 0.6,
+                  transform: `scale(${currentIndex === index ? 1 : isMobile ? 1 : 0.95})`,
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <TipsAndUpdatesIcon sx={{ mr: 1 }} />
+                  <Typography variant="h6">Insight {index + 1}</Typography>
+                </Box>
+                <Typography 
+                  sx={{ 
+                    flex: 1,
+                    overflow: 'auto',
+                    '&::-webkit-scrollbar': {
+                      width: '8px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      background: theme.palette.background.default,
+                      borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      background: theme.palette.primary.main,
+                      borderRadius: '4px',
+                      '&:hover': {
+                        background: theme.palette.primary.dark,
+                      },
+                    },
+                  }}
+                >
+                  {insight.insight}
+                </Typography>
+              </Paper>
+            ))
+          )}
+          
+          {isLoading && insights && insights.length > 0 && (
+            <Paper
+              elevation={2}
+              sx={{
+                p: 3,
+                width: isMobile ? '100%' : '40%',
+                minWidth: isMobile ? '100%' : '40%',
+                flex: isMobile ? 1 : 'none',
+                scrollSnapAlign: 'start',
+                height: { xs: 'auto', md: '280px' },
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <TipsAndUpdatesIcon sx={{ mr: 1 }} />
+                <Typography variant="h6">Generating more insights...</Typography>
+              </Box>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                flex: 1
+              }}>
+                <CircularProgress size={24} />
+              </Box>
+            </Paper>
+          )}
+        </Box>
       </Box>
 
       {!isMobile && insights && insights.length > 1 && (
@@ -138,6 +180,11 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
               left: -20,
               top: '50%',
               transform: 'translateY(-50%)',
+              bgcolor: 'background.paper',
+              boxShadow: 2,
+              '&:hover': {
+                bgcolor: 'background.paper',
+              },
             }}
           >
             <ChevronLeftIcon />
@@ -150,6 +197,11 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
               right: -20,
               top: '50%',
               transform: 'translateY(-50%)',
+              bgcolor: 'background.paper',
+              boxShadow: 2,
+              '&:hover': {
+                bgcolor: 'background.paper',
+              },
             }}
           >
             <ChevronRightIcon />
