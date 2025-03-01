@@ -5,6 +5,7 @@ import RevenueTable from "./revenue/RevenueTable";
 import RevenueInsights from "./revenue/RevenueInsights";
 import { Typography, Box, CircularProgress } from '@mui/material';
 import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from 'react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
 
@@ -22,70 +23,59 @@ const fetchRevenueData = async (ticker: string | undefined) => {
   }
 }
 
-const fetchRevenueInsights = async (ticker: string | undefined) => {
-  if(!ticker) {
-    throw new Error('Ticker is required')
-  }
-
-  try {
-    const response = await fetch(`${BACKEND_URL}/api/companies/${ticker}/revenue/insights`);
-    const reader = response.body?.getReader();
-    const decoder = new TextDecoder();
-    const insights: RevenueInsight[] = [];
-    
-    if (!reader) throw new Error('Failed to get response reader');
-
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      
-      const chunk = decoder.decode(value);
-      const lines = chunk.split('\n');
-      
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6);
-          if (data === '[DONE]') break;
-          
-          const parsed = JSON.parse(data);
-          
-          if (parsed.status === 'error') {
-            throw new Error(parsed.error);
-          }
-          
-          if (parsed.status === 'success' && parsed.data) {
-            insights.push(parsed.data);
-          }
-          // Handle streaming updates if needed
-          if (parsed.status === 'streaming') {
-            console.log('Streaming update:', parsed.content);
-          }
-        }
-      }
-    }
-    
-    return insights;
-  } catch (error) {
-    console.error('Error fetching revenue insights:', error);
-    throw error;
-  }
-}
-
 const Revenue = () => {
   const { ticker } = useParams();
+  const [streamingInsights, setStreamingInsights] = useState<RevenueInsight[]>([]);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
+
   const {data: revenueData, isLoading: isLoadingRevenue} = useQuery({
     queryKey: ['revenue', ticker],
     queryFn: () => fetchRevenueData(ticker),
-    staleTime: 1000 * 60 * 5, // cache the data for 5 minutes
+    staleTime: 1000 * 60 * 60, // cache the data for 1 hour
   })
 
-  const {data: revenueInsightData, isLoading: isLoadingInsights} = useQuery({
-    queryKey: ['revenue_insights', ticker],
-    queryFn: () => fetchRevenueInsights(ticker),
-    staleTime: 1000 * 60 * 60, // cache the data for 1 hour
-    enabled: !!revenueData, // Only start fetching insights after revenue data is loaded
-  })
+  useEffect(() => {
+    if (!ticker || !revenueData) return;
+
+    setIsLoadingInsights(true);
+    setStreamingInsights([]);
+
+    const eventSource = new EventSource(`${BACKEND_URL}/api/companies/${ticker}/revenue/insights/product`);
+
+    eventSource.onmessage = (event) => {
+      if (event.data === '[DONE]') {
+        eventSource.close();
+        setIsLoadingInsights(false);
+        return;
+      }
+
+      const data = JSON.parse(event.data);
+      
+      if (data.status === 'error') {
+        eventSource.close();
+        setIsLoadingInsights(false);
+        console.error('Error fetching insights:', data.error);
+        return;
+      }
+
+      if (data.status === 'success' && data.data?.content) {
+        setStreamingInsights(prev => [...prev, {
+          insight: data.data.content,
+          type: 'product'
+        }]);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      eventSource.close();
+      setIsLoadingInsights(false);
+      console.error('EventSource error:', error);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [ticker, revenueData]);
 
   if(isLoadingRevenue) return <CircularProgress size={24} color="inherit" />
   
@@ -114,7 +104,7 @@ const Revenue = () => {
       <Typography variant="h5" sx={{ mb: 2 }}>
         By product category
       </Typography>
-      <RevenueInsights insights={revenueInsightData?.filter(item => item.type === 'product')} isLoading={isLoadingInsights} />
+      <RevenueInsights insights={streamingInsights.filter(item => item.type === 'product')} isLoading={isLoadingInsights} />
       <Box sx={{ mt: 4 }}>
         <RevenueChart revenueData={productRevenueData} />
       </Box>
@@ -124,7 +114,7 @@ const Revenue = () => {
       <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>
         By geographic
       </Typography>
-      <RevenueInsights insights={revenueInsightData?.filter(item => item.type === 'region')} isLoading={isLoadingInsights} />
+      <RevenueInsights insights={streamingInsights.filter(item => item.type === 'region')} isLoading={isLoadingInsights} />
       <Box sx={{ mt: 4 }}>
         <RevenueChart revenueData={regionRevenueData} />
       </Box>
