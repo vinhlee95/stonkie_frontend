@@ -19,6 +19,10 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
   const desktopCardStyles = {
     p: 2,
     width: '500px',
+    maxHeight: '250px',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
   };
 
   const mobileCardStyles = {
@@ -33,7 +37,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
       sx={cardStyles}
     >
       <Skeleton variant="text" width="80%" height={28} sx={{ mb: 2 }} />
-      <Box sx={{ flex: 1 }}>
+      <Box sx={{ flex: 1, overflow: 'auto' }}>
         <Skeleton variant="text" width="100%" height={24} />
         <Skeleton variant="text" width="90%" height={24} />
         <Skeleton variant="text" width="95%" height={24} />
@@ -48,30 +52,32 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
       elevation={2}
       sx={cardStyles}
     >
-      <Typography 
-        sx={{ 
-          flex: 1,
-          overflow: 'auto',
-          fontSize: '1rem',
-          lineHeight: 1.5,
-          '&::-webkit-scrollbar': {
-            width: '8px',
+      <Box sx={{ 
+        flex: 1,
+        overflow: 'auto',
+        '&::-webkit-scrollbar': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: theme.palette.grey[300],
+          borderRadius: '3px',
+          '&:hover': {
+            background: theme.palette.grey[400],
           },
-          '&::-webkit-scrollbar-track': {
-            background: theme.palette.background.default,
-            borderRadius: '4px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: theme.palette.primary.main,
-            borderRadius: '4px',
-            '&:hover': {
-              background: theme.palette.primary.dark,
-            },
-          },
-        }}
-      >
-        {insight.insight}
-      </Typography>
+        },
+      }}>
+        <Typography 
+          sx={{ 
+            fontSize: '1rem',
+            lineHeight: 1.5,
+          }}
+        >
+          {insight.insight}
+        </Typography>
+      </Box>
     </Paper>
   );
 
@@ -119,17 +125,16 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
         px: 3,
         pb: 2,
         '&::-webkit-scrollbar': {
-          height: '8px',
+          height: '6px',
         },
         '&::-webkit-scrollbar-track': {
-          background: theme.palette.background.default,
-          borderRadius: '4px',
+          background: 'transparent',
         },
         '&::-webkit-scrollbar-thumb': {
-          background: theme.palette.primary.main,
-          borderRadius: '4px',
+          background: theme.palette.grey[300],
+          borderRadius: '3px',
           '&:hover': {
-            background: theme.palette.primary.dark,
+            background: theme.palette.grey[400],
           },
         },
       }}>
