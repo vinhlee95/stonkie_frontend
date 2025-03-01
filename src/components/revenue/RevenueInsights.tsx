@@ -237,19 +237,14 @@ export default function RevenueInsights({ insights }: RevenueInsightsProps) {
           },
         },
       }}>
-        {!insights?.length ? (
-          Array(3).fill(null).map((_, i) => (
+        {Array(5).fill(null).map((_, i) => {
+          const insight = insights?.[i];
+          return (
             <Box key={i}>
-              {renderPlaceholderCard()}
+              {insight ? renderInsightCard(insight) : renderPlaceholderCard()}
             </Box>
-          ))
-        ) : (
-          insights.map((insight, index) => (
-            <Box key={index}>
-              {renderInsightCard(insight)}
-            </Box>
-          ))
-        )}
+          );
+        })}
       </Box>
     </Box>
   );
