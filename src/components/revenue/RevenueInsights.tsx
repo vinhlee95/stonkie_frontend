@@ -25,6 +25,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
+    borderRadius: 2,
   };
 
   const mobileCardStyles = {
@@ -35,6 +36,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
+    borderRadius: 2,
   };
 
   const cardStyles = isMobile ? mobileCardStyles : desktopCardStyles;
@@ -60,7 +62,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
 
   const renderPlaceholderCard = () => (
     <Paper
-      elevation={2}
+      elevation={1}
       sx={cardStyles}
     >
       <Box sx={{ px: 2, py: 2 }}>
@@ -78,7 +80,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
 
   const renderInsightCard = (insight: RevenueInsight) => (
     <Paper
-      elevation={2}
+      elevation={1}
       sx={cardStyles}
     >
       <Box sx={scrollableContentStyles}>
@@ -129,7 +131,6 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
       position: 'relative',
       width: '100%',
       height: '300px',
-      mb: 4,
     }}>
       <Box sx={{
         display: 'flex',
