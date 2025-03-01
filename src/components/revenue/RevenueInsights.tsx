@@ -4,6 +4,10 @@ import { useRef } from 'react';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
+import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -18,8 +22,8 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
 
   const desktopCardStyles = {
     p: 0,
-    pt: 1,
-    pb: 1,
+    pt: 2,
+    pb: 2,
     width: '500px',
     maxHeight: '250px',
     overflow: 'hidden',
@@ -30,8 +34,8 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
 
   const mobileCardStyles = {
     p: 0,
-    pt: 1,
-    pb: 1,
+    pt: 1.5,
+    pb: 1.5,
     maxHeight: '250px',
     overflow: 'hidden',
     display: 'flex',
@@ -60,41 +64,122 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
     },
   };
 
-  const renderPlaceholderCard = () => (
-    <Paper
-      elevation={1}
-      sx={cardStyles}
-    >
-      <Box sx={{ px: 2, py: 2 }}>
-        <Skeleton variant="text" width="80%" height={28} sx={{ mb: 2 }} />
-      </Box>
-      <Box sx={scrollableContentStyles}>
-        <Skeleton variant="text" width="100%" height={24} />
-        <Skeleton variant="text" width="90%" height={24} />
-        <Skeleton variant="text" width="95%" height={24} />
-        <Skeleton variant="text" width="85%" height={24} />
-        <Skeleton variant="text" width="90%" height={24} />
-      </Box>
-    </Paper>
-  );
+  const backgroundIcons = [
+    TipsAndUpdatesOutlinedIcon,
+    ShowChartIcon,
+    TrendingUpIcon,
+    MonetizationOnOutlinedIcon,
+  ];
 
-  const renderInsightCard = (insight: RevenueInsight) => (
-    <Paper
-      elevation={1}
-      sx={cardStyles}
-    >
-      <Box sx={scrollableContentStyles}>
-        <Typography 
-          sx={{ 
-            fontSize: '1rem',
-            lineHeight: 1.5,
-          }}
-        >
-          {insight.insight}
-        </Typography>
-      </Box>
-    </Paper>
-  );
+  const getRandomPosition = () => {
+    const positions = [
+      // Bottom right
+      { right: -20, bottom: -20, left: 'auto', top: 'auto', rotate: -15 },
+      { right: -30, bottom: -10, left: 'auto', top: 'auto', rotate: -25 },
+      // Top right
+      { right: -25, top: -20, left: 'auto', bottom: 'auto', rotate: 15 },
+      { right: -15, top: -25, left: 'auto', bottom: 'auto', rotate: 25 },
+      // Bottom left
+      { left: -20, bottom: -20, right: 'auto', top: 'auto', rotate: 15 },
+      { left: -25, bottom: -15, right: 'auto', top: 'auto', rotate: 25 },
+      // Top left
+      { left: -15, top: -20, right: 'auto', bottom: 'auto', rotate: -25 },
+      { left: -25, top: -15, right: 'auto', bottom: 'auto', rotate: -15 },
+    ];
+    return positions[Math.floor(Math.random() * positions.length)];
+  };
+
+  const getRandomIcon = () => {
+    return backgroundIcons[Math.floor(Math.random() * backgroundIcons.length)];
+  };
+
+  const renderPlaceholderCard = () => {
+    const position = getRandomPosition();
+    const Icon = getRandomIcon();
+    return (
+      <Paper
+        elevation={1}
+        sx={{
+          ...cardStyles,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <Box sx={{
+          position: 'absolute',
+          right: position.right,
+          bottom: position.bottom,
+          left: position.left,
+          top: position.top,
+          opacity: theme.palette.mode === 'light' ? 0.15 : 0.12,
+          transform: `rotate(${position.rotate}deg)`,
+          color: theme.palette.mode === 'light'
+            ? theme.palette.primary.light
+            : theme.palette.primary.main,
+          '& svg': {
+            fontSize: '150px',
+          }
+        }}>
+          <Icon />
+        </Box>
+        <Box sx={{ px: 2, py: 2 }}>
+          <Skeleton variant="text" width="80%" height={28} sx={{ mb: 2 }} />
+        </Box>
+        <Box sx={scrollableContentStyles}>
+          <Skeleton variant="text" width="100%" height={24} />
+          <Skeleton variant="text" width="90%" height={24} />
+          <Skeleton variant="text" width="95%" height={24} />
+          <Skeleton variant="text" width="85%" height={24} />
+          <Skeleton variant="text" width="90%" height={24} />
+        </Box>
+      </Paper>
+    );
+  };
+
+  const renderInsightCard = (insight: RevenueInsight) => {
+    const position = getRandomPosition();
+    const Icon = getRandomIcon();
+    return (
+      <Paper
+        elevation={1}
+        sx={{
+          ...cardStyles,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <Box sx={{
+          position: 'absolute',
+          right: position.right,
+          bottom: position.bottom,
+          left: position.left,
+          top: position.top,
+          opacity: theme.palette.mode === 'light' ? 0.15 : 0.12,
+          transform: `rotate(${position.rotate}deg)`,
+          color: theme.palette.mode === 'light'
+            ? theme.palette.primary.light
+            : theme.palette.primary.main,
+          '& svg': {
+            fontSize: '150px',
+          }
+        }}>
+          <Icon />
+        </Box>
+        <Box sx={scrollableContentStyles}>
+          <Typography
+            sx={{
+              fontSize: '1rem',
+              lineHeight: 1.5,
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            {insight.insight}
+          </Typography>
+        </Box>
+      </Paper>
+    );
+  };
 
   if (isMobile) {
     return (
@@ -104,7 +189,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
           spaceBetween={16}
           slidesPerView={1}
           pagination={{ clickable: true }}
-          style={{ 
+          style={{
             padding: '16px 0 32px 0',
             cursor: 'grab',
             width: '100%'
@@ -127,7 +212,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
   }
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       position: 'relative',
       width: '100%',
       height: '300px',
