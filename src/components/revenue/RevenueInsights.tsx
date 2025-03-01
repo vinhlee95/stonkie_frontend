@@ -1,213 +1,152 @@
-import { Typography, Box, Paper, Skeleton, IconButton, CircularProgress } from '@mui/material';
+import { Typography, Box, Paper, Skeleton } from '@mui/material';
 import { RevenueInsight } from '../../types';
-import { useState, useRef, useEffect } from 'react';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import { useRef } from 'react';
 import { useMediaQuery, useTheme } from '@mui/material';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 interface RevenueInsightsProps {
-  insights: RevenueInsight[] | undefined;
-  isLoading: boolean;
+  insights?: RevenueInsight[];
+  isLoading?: boolean;
 }
 
 export default function RevenueInsights({ insights, isLoading }: RevenueInsightsProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
-    }
+  const desktopCardStyles = {
+    p: 2,
+    width: '500px',
   };
 
-  const handleNext = () => {
-    if (insights && currentIndex < insights.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    }
+  const mobileCardStyles = {
+    p: 2
   };
 
-  // Auto-advance to new insights as they arrive
-  useEffect(() => {
-    if (insights && insights.length > 0 && currentIndex === insights.length - 2) {
-      setCurrentIndex(insights.length - 1);
-    }
-  }, [insights?.length]);
+  const cardStyles = isMobile ? mobileCardStyles : desktopCardStyles;
+
+  const renderPlaceholderCard = () => (
+    <Paper
+      elevation={2}
+      sx={cardStyles}
+    >
+      <Skeleton variant="text" width="80%" height={28} sx={{ mb: 2 }} />
+      <Box sx={{ flex: 1 }}>
+        <Skeleton variant="text" width="100%" height={24} />
+        <Skeleton variant="text" width="90%" height={24} />
+        <Skeleton variant="text" width="95%" height={24} />
+        <Skeleton variant="text" width="85%" height={24} />
+        <Skeleton variant="text" width="90%" height={24} />
+      </Box>
+    </Paper>
+  );
+
+  const renderInsightCard = (insight: RevenueInsight) => (
+    <Paper
+      elevation={2}
+      sx={cardStyles}
+    >
+      <Typography 
+        sx={{ 
+          flex: 1,
+          overflow: 'auto',
+          fontSize: '1rem',
+          lineHeight: 1.5,
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: theme.palette.background.default,
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: theme.palette.primary.main,
+            borderRadius: '4px',
+            '&:hover': {
+              background: theme.palette.primary.dark,
+            },
+          },
+        }}
+      >
+        {insight.insight}
+      </Typography>
+    </Paper>
+  );
+
+  if (isMobile) {
+    return (
+      <Box sx={{ position: 'relative', width: '100%' }}>
+        <Swiper
+          modules={[Pagination]}
+          spaceBetween={16}
+          slidesPerView={1}
+          pagination={{ clickable: true }}
+          style={{ 
+            padding: '16px 0 32px 0',
+            cursor: 'grab',
+            width: '100%'
+          }}
+        >
+          {!insights?.length ? (
+            <SwiperSlide>
+              {renderPlaceholderCard()}
+            </SwiperSlide>
+          ) : (
+            insights.map((insight, index) => (
+              <SwiperSlide key={index}>
+                {renderInsightCard(insight)}
+              </SwiperSlide>
+            ))
+          )}
+        </Swiper>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ 
       position: 'relative',
       width: '100%',
-      height: { xs: 'auto', md: '300px' }, 
-      display: 'flex',
-      alignItems: 'center'
+      height: '300px',
+      mb: 4,
     }}>
-      <Box
-        ref={containerRef}
-        sx={{
-          display: 'flex',
-          gap: 2,
-          height: '100%',
-          width: '100%',
-          overflowX: isMobile ? 'auto' : 'hidden', 
-          overflowY: 'hidden',
-          scrollSnapType: 'x mandatory',
-          '&::-webkit-scrollbar': { display: 'none' },
-          msOverflowStyle: 'none',
-          scrollbarWidth: 'none',
-          position: 'relative',
-        }}
-      >
-        <Box sx={{
-          display: 'flex',
-          gap: 2,
-          transition: 'transform 0.3s ease',
-          transform: isMobile ? 'none' : `translateX(-${currentIndex * 42}%)`, 
-          width: isMobile ? 'auto' : 'fit-content',
-          height: '100%',
-        }}>
-          {isLoading && insights?.length === 0 ? (
-            <Paper
-              elevation={2}
-              sx={{
-                p: 3,
-                width: isMobile ? '100%' : '40%',
-                minWidth: isMobile ? '100%' : '40%',
-                flex: isMobile ? 1 : 'none',
-                scrollSnapAlign: 'start',
-                height: { xs: 'auto', md: '280px' },
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <TipsAndUpdatesIcon sx={{ mr: 1 }} />
-                <Skeleton width={200} />
-              </Box>
-              <Skeleton />
-              <Skeleton />
-              <Skeleton />
-            </Paper>
-          ) : (
-            insights?.map((insight, index) => (
-              <Paper
-                key={index}
-                elevation={2}
-                sx={{
-                  p: 3,
-                  width: isMobile ? '100%' : '40%',
-                  minWidth: isMobile ? '100%' : '40%',
-                  flex: isMobile ? 1 : 'none',
-                  scrollSnapAlign: 'start',
-                  height: { xs: 'auto', md: '280px' },
-                  opacity: currentIndex === index ? 1 : isMobile ? 1 : 0.6,
-                  transform: `scale(${currentIndex === index ? 1 : isMobile ? 1 : 0.95})`,
-                  transition: 'all 0.3s ease',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <TipsAndUpdatesIcon sx={{ mr: 1 }} />
-                  <Typography variant="h6">Insight {index + 1}</Typography>
-                </Box>
-                <Typography 
-                  sx={{ 
-                    flex: 1,
-                    overflow: 'auto',
-                    '&::-webkit-scrollbar': {
-                      width: '8px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      background: theme.palette.background.default,
-                      borderRadius: '4px',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      background: theme.palette.primary.main,
-                      borderRadius: '4px',
-                      '&:hover': {
-                        background: theme.palette.primary.dark,
-                      },
-                    },
-                  }}
-                >
-                  {insight.insight}
-                </Typography>
-              </Paper>
-            ))
-          )}
-          
-          {isLoading && insights && insights.length > 0 && (
-            <Paper
-              elevation={2}
-              sx={{
-                p: 3,
-                width: isMobile ? '100%' : '40%',
-                minWidth: isMobile ? '100%' : '40%',
-                flex: isMobile ? 1 : 'none',
-                scrollSnapAlign: 'start',
-                height: { xs: 'auto', md: '280px' },
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <TipsAndUpdatesIcon sx={{ mr: 1 }} />
-                <Typography variant="h6">Generating more insights...</Typography>
-              </Box>
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                flex: 1
-              }}>
-                <CircularProgress size={24} />
-              </Box>
-            </Paper>
-          )}
-        </Box>
+      <Box sx={{
+        display: 'flex',
+        gap: 3,
+        overflowX: 'auto',
+        px: 3,
+        pb: 2,
+        '&::-webkit-scrollbar': {
+          height: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: theme.palette.background.default,
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: theme.palette.primary.main,
+          borderRadius: '4px',
+          '&:hover': {
+            background: theme.palette.primary.dark,
+          },
+        },
+      }}>
+        {!insights?.length ? (
+          Array(3).fill(null).map((_, i) => (
+            <Box key={i}>
+              {renderPlaceholderCard()}
+            </Box>
+          ))
+        ) : (
+          insights.map((insight, index) => (
+            <Box key={index}>
+              {renderInsightCard(insight)}
+            </Box>
+          ))
+        )}
       </Box>
-
-      {!isMobile && insights && insights.length > 1 && (
-        <>
-          <IconButton
-            onClick={handlePrevious}
-            disabled={currentIndex === 0}
-            sx={{
-              position: 'absolute',
-              left: -20,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              bgcolor: 'background.paper',
-              boxShadow: 2,
-              '&:hover': {
-                bgcolor: 'background.paper',
-              },
-            }}
-          >
-            <ChevronLeftIcon />
-          </IconButton>
-          <IconButton
-            onClick={handleNext}
-            disabled={currentIndex === insights.length - 1}
-            sx={{
-              position: 'absolute',
-              right: -20,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              bgcolor: 'background.paper',
-              boxShadow: 2,
-              '&:hover': {
-                bgcolor: 'background.paper',
-              },
-            }}
-          >
-            <ChevronRightIcon />
-          </IconButton>
-        </>
-      )}
     </Box>
   );
 }
