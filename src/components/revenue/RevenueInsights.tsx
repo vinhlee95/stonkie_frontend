@@ -17,7 +17,9 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const desktopCardStyles = {
-    p: 2,
+    p: 0,
+    pt: 1,
+    pb: 1,
     width: '500px',
     maxHeight: '250px',
     overflow: 'hidden',
@@ -26,7 +28,9 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
   };
 
   const mobileCardStyles = {
-    p: 2,
+    p: 0,
+    pt: 1,
+    pb: 1,
     maxHeight: '250px',
     overflow: 'hidden',
     display: 'flex',
@@ -38,6 +42,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
   const scrollableContentStyles = {
     flex: 1,
     overflow: 'auto',
+    px: 2,
     '&::-webkit-scrollbar': {
       width: '6px',
     },
@@ -58,7 +63,9 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
       elevation={2}
       sx={cardStyles}
     >
-      <Skeleton variant="text" width="80%" height={28} sx={{ mb: 2 }} />
+      <Box sx={{ px: 2, py: 2 }}>
+        <Skeleton variant="text" width="80%" height={28} sx={{ mb: 2 }} />
+      </Box>
       <Box sx={scrollableContentStyles}>
         <Skeleton variant="text" width="100%" height={24} />
         <Skeleton variant="text" width="90%" height={24} />
@@ -130,6 +137,7 @@ export default function RevenueInsights({ insights, isLoading }: RevenueInsights
         overflowX: 'auto',
         px: 3,
         pb: 2,
+        pl: 0,
         '&::-webkit-scrollbar': {
           height: '6px',
         },
