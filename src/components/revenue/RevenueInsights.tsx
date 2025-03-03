@@ -35,7 +35,7 @@ export default function RevenueInsights({ insights }: RevenueInsightsProps) {
     p: 0,
     pt: 1.5,
     pb: 1.5,
-    maxHeight: '250px',
+    maxHeight: '320px',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',

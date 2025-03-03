@@ -130,18 +130,18 @@ const Revenue = () => {
 
   return (
     <div className="revenue-charts">
-      <Typography variant="h5" sx={{ mb: 2 }}>
+      <Typography variant="h5" >
         By product category
       </Typography>
       <RevenueInsights insights={productInsights} />
       <Box sx={{ mt: 4 }}>
         <RevenueChart revenueData={productRevenueData} />
       </Box>
-      <Box sx={{ mt: 4 }}>
+      <Box sx={{ mt: 4, mb: 2 }}>
         <RevenueTable revenueData={productRevenueData} />
       </Box>
-      <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>
-        By geographic
+      <Typography variant="h5" sx={{ mt: 4 }}>
+        By region
       </Typography>
       <RevenueInsights insights={regionInsights} />
       <Box sx={{ mt: 4 }}>
