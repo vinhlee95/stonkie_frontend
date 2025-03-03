@@ -5,7 +5,7 @@ import RevenueTable from "./revenue/RevenueTable";
 import RevenueInsights from "./revenue/RevenueInsights";
 import { Typography, Box, CircularProgress } from '@mui/material';
 import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080'
 
@@ -153,7 +153,7 @@ const Revenue = () => {
       percentage: item.percentage
     }))
   })).sort((a, b) => a.year - b.year)
-  console.log(regionInsights)
+
   return (
     <div className="revenue-charts">
       <Typography variant="h5" sx={{ mb: 2 }}>
