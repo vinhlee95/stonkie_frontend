@@ -23,6 +23,45 @@ const fetchRevenueData = async (ticker: string | undefined) => {
   }
 }
 
+const createInsightStream = (
+  url: string,
+  onInsight: (content: string) => void
+) => {
+  return new Promise((resolve, reject) => {
+    const eventSource = new EventSource(url);
+    
+    eventSource.onmessage = (event) => {
+      if (event.data === '[DONE]') {
+        eventSource.close();
+        resolve(null);
+        return;
+      }
+
+      const data = JSON.parse(event.data);
+      
+      if (data.status === 'error') {
+        eventSource.close();
+        reject(new Error(data.error));
+        return;
+      }
+
+      if (data.status === 'success' && data.data?.content) {
+        onInsight(data.data.content);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      eventSource.close();
+      reject(error);
+    };
+
+    // Cleanup function
+    return () => {
+      eventSource.close();
+    };
+  });
+};
+
 const Revenue = () => {
   const { ticker } = useParams();
   const [productInsights, setProductInsights] = useState<string[]>([]);
@@ -40,39 +79,10 @@ const Revenue = () => {
       
       setProductInsights([]); // Reset insights when query starts
       
-      return new Promise((resolve, reject) => {
-        const eventSource = new EventSource(`${BACKEND_URL}/api/companies/${ticker}/revenue/insights/product`);
-        
-        eventSource.onmessage = (event) => {
-          if (event.data === '[DONE]') {
-            eventSource.close();
-            resolve(null);
-            return;
-          }
-
-          const data = JSON.parse(event.data);
-          
-          if (data.status === 'error') {
-            eventSource.close();
-            reject(new Error(data.error));
-            return;
-          }
-
-          if (data.status === 'success' && data.data?.content) {
-            setProductInsights(prev => [...prev, data.data.content]);
-          }
-        };
-
-        eventSource.onerror = (error) => {
-          eventSource.close();
-          reject(error);
-        };
-
-        // Cleanup function
-        return () => {
-          eventSource.close();
-        };
-      });
+      return createInsightStream(
+        `${BACKEND_URL}/api/companies/${ticker}/revenue/insights/product`,
+        (content) => setProductInsights(prev => [...prev, content])
+      );
     },
     enabled: Boolean(ticker && revenueData),
     refetchOnWindowFocus: false,
@@ -86,41 +96,11 @@ const Revenue = () => {
       
       setRegionInsights([]); // Reset insights when query starts
       
-      return new Promise((resolve, reject) => {
-        const eventSource = new EventSource(`${BACKEND_URL}/api/companies/${ticker}/revenue/insights/region`);
-        
-        eventSource.onmessage = (event) => {
-          if (event.data === '[DONE]') {
-            eventSource.close();
-            resolve(null);
-            return;
-          }
-
-          const data = JSON.parse(event.data);
-          
-          if (data.status === 'error') {
-            eventSource.close();
-            reject(new Error(data.error));
-            return;
-          }
-
-          if (data.status === 'success' && data.data?.content) {
-            setRegionInsights(prev => [...prev, data.data.content]);
-          }
-        };
-
-        eventSource.onerror = (error) => {
-          eventSource.close();
-          reject(error);
-        };
-
-        // Cleanup function
-        return () => {
-          eventSource.close();
-        };
-      });
+      return createInsightStream(
+        `${BACKEND_URL}/api/companies/${ticker}/revenue/insights/region`,
+        (content) => setRegionInsights(prev => [...prev, content])
+      );
     },
-    // Fetch this after product insights are fetched
     enabled: Boolean(ticker && revenueData) && productInsights.length > 0,
     refetchOnWindowFocus: false,
     retry: false
