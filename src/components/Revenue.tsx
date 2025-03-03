@@ -30,47 +30,56 @@ const Revenue = () => {
   const {data: revenueData, isLoading: isLoadingRevenue} = useQuery({
     queryKey: ['revenue', ticker],
     queryFn: () => fetchRevenueData(ticker),
-    staleTime: 1000 * 60 * 60, // cache the data for 1 hour
-  })
+  });
 
-  useEffect(() => {
-    if (!ticker || !revenueData) return;
-
-    setStreamingInsights([]);
-
-    const eventSource = new EventSource(`${BACKEND_URL}/api/companies/${ticker}/revenue/insights/product`);
-
-    eventSource.onmessage = (event) => {
-      if (event.data === '[DONE]') {
-        eventSource.close();
-        return;
-      }
-
-      const data = JSON.parse(event.data);
+  useQuery({
+    queryKey: ['revenue-insights', ticker],
+    queryFn: () => {
+      if (!ticker || !revenueData) return null;
       
-      if (data.status === 'error') {
-        eventSource.close();
-        console.error('Error fetching insights:', data.error);
-        return;
-      }
+      setStreamingInsights([]); // Reset insights when query starts
+      
+      return new Promise((resolve, reject) => {
+        const eventSource = new EventSource(`${BACKEND_URL}/api/companies/${ticker}/revenue/insights/product`);
+        
+        eventSource.onmessage = (event) => {
+          if (event.data === '[DONE]') {
+            eventSource.close();
+            resolve(null);
+            return;
+          }
 
-      if (data.status === 'success' && data.data?.content) {
-        setStreamingInsights(prev => [...prev, {
-          insight: data.data.content,
-          type: 'product'
-        }]);
-      }
-    };
+          const data = JSON.parse(event.data);
+          
+          if (data.status === 'error') {
+            eventSource.close();
+            reject(new Error(data.error));
+            return;
+          }
 
-    eventSource.onerror = (error) => {
-      eventSource.close();
-      console.error('EventSource error:', error);
-    };
+          if (data.status === 'success' && data.data?.content) {
+            setStreamingInsights(prev => [...prev, {
+              insight: data.data.content,
+              type: 'product' as const
+            }]);
+          }
+        };
 
-    return () => {
-      eventSource.close();
-    };
-  }, [ticker, revenueData]);
+        eventSource.onerror = (error) => {
+          eventSource.close();
+          reject(error);
+        };
+
+        // Cleanup function
+        return () => {
+          eventSource.close();
+        };
+      });
+    },
+    enabled: Boolean(ticker && revenueData),
+    refetchOnWindowFocus: false,
+    retry: false
+  });
 
   if(isLoadingRevenue) return <CircularProgress size={24} color="inherit" />
   
