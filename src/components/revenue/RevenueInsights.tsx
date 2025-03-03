@@ -1,6 +1,4 @@
 import { Typography, Box, Paper, Skeleton } from '@mui/material';
-import { RevenueInsight } from '../../types';
-import { useRef } from 'react';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
@@ -14,7 +12,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 interface RevenueInsightsProps {
-  insights?: RevenueInsight[];
+  insights?: string[];
 }
 
 export default function RevenueInsights({ insights }: RevenueInsightsProps) {
@@ -137,7 +135,7 @@ export default function RevenueInsights({ insights }: RevenueInsightsProps) {
     );
   };
 
-  const renderInsightCard = (insight: RevenueInsight, index: number) => {
+  const renderInsightCard = (insight: string, index: number) => {
     const { position, Icon } = getPositionAndIcon(index);
     return (
       <Paper
@@ -174,7 +172,7 @@ export default function RevenueInsights({ insights }: RevenueInsightsProps) {
               zIndex: 1,
             }}
           >
-            {insight.insight}
+            {insight}
           </Typography>
         </Box>
       </Paper>

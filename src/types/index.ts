@@ -27,8 +27,3 @@ export interface RevenueData {
   product_breakdown: ProductRevenueBreakdown[];
   region_breakdown: RegionRevenueBreakdown[];
 }
-
-export interface RevenueInsight {
-  type: 'product' | 'region'
-  insight: string
-}

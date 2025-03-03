@@ -1,4 +1,4 @@
-import { RevenueData, RevenueInsight } from "../types";
+import { RevenueData } from "../types";
 import { useParams } from "react-router-dom";
 import RevenueChart from "./revenue/RevenueChart";
 import RevenueTable from "./revenue/RevenueTable";
@@ -25,8 +25,8 @@ const fetchRevenueData = async (ticker: string | undefined) => {
 
 const Revenue = () => {
   const { ticker } = useParams();
-  const [productInsights, setProductInsights] = useState<RevenueInsight[]>([]);
-  const [regionInsights, setRegionInsights] = useState<RevenueInsight[]>([]);
+  const [productInsights, setProductInsights] = useState<string[]>([]);
+  const [regionInsights, setRegionInsights] = useState<string[]>([]);
 
   const {data: revenueData, isLoading: isLoadingRevenue} = useQuery({
     queryKey: ['revenue', ticker],
@@ -59,10 +59,7 @@ const Revenue = () => {
           }
 
           if (data.status === 'success' && data.data?.content) {
-            setProductInsights(prev => [...prev, {
-              insight: data.data.content,
-              type: 'product' as const
-            }]);
+            setProductInsights(prev => [...prev, data.data.content]);
           }
         };
 
@@ -108,10 +105,7 @@ const Revenue = () => {
           }
 
           if (data.status === 'success' && data.data?.content) {
-            setRegionInsights(prev => [...prev, {
-              insight: data.data.content,
-              type: 'region' as const
-            }]);
+            setRegionInsights(prev => [...prev, data.data.content]);
           }
         };
 
@@ -159,7 +153,7 @@ const Revenue = () => {
       <Typography variant="h5" sx={{ mb: 2 }}>
         By product category
       </Typography>
-      <RevenueInsights insights={productInsights.filter(item => item.type === 'product')} />
+      <RevenueInsights insights={productInsights} />
       <Box sx={{ mt: 4 }}>
         <RevenueChart revenueData={productRevenueData} />
       </Box>
@@ -169,7 +163,7 @@ const Revenue = () => {
       <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>
         By geographic
       </Typography>
-      <RevenueInsights insights={regionInsights.filter(item => item.type === 'region')} />
+      <RevenueInsights insights={regionInsights} />
       <Box sx={{ mt: 4 }}>
         <RevenueChart revenueData={regionRevenueData} />
       </Box>
