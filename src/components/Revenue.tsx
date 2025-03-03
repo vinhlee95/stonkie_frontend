@@ -25,7 +25,8 @@ const fetchRevenueData = async (ticker: string | undefined) => {
 
 const Revenue = () => {
   const { ticker } = useParams();
-  const [streamingInsights, setStreamingInsights] = useState<RevenueInsight[]>([]);
+  const [productInsights, setProductInsights] = useState<RevenueInsight[]>([]);
+  const [regionInsights, setRegionInsights] = useState<RevenueInsight[]>([]);
 
   const {data: revenueData, isLoading: isLoadingRevenue} = useQuery({
     queryKey: ['revenue', ticker],
@@ -37,7 +38,7 @@ const Revenue = () => {
     queryFn: () => {
       if (!ticker || !revenueData) return null;
       
-      setStreamingInsights([]); // Reset insights when query starts
+      setProductInsights([]); // Reset insights when query starts
       
       return new Promise((resolve, reject) => {
         const eventSource = new EventSource(`${BACKEND_URL}/api/companies/${ticker}/revenue/insights/product`);
@@ -58,7 +59,7 @@ const Revenue = () => {
           }
 
           if (data.status === 'success' && data.data?.content) {
-            setStreamingInsights(prev => [...prev, {
+            setProductInsights(prev => [...prev, {
               insight: data.data.content,
               type: 'product' as const
             }]);
@@ -77,6 +78,56 @@ const Revenue = () => {
       });
     },
     enabled: Boolean(ticker && revenueData),
+    refetchOnWindowFocus: false,
+    retry: false
+  });
+
+  useQuery({
+    queryKey: ['region-insights', ticker],
+    queryFn: () => {
+      if (!ticker || !revenueData) return null;
+      
+      setRegionInsights([]); // Reset insights when query starts
+      
+      return new Promise((resolve, reject) => {
+        const eventSource = new EventSource(`${BACKEND_URL}/api/companies/${ticker}/revenue/insights/region`);
+        
+        eventSource.onmessage = (event) => {
+          if (event.data === '[DONE]') {
+            eventSource.close();
+            resolve(null);
+            return;
+          }
+
+          const data = JSON.parse(event.data);
+          
+          if (data.status === 'error') {
+            eventSource.close();
+            reject(new Error(data.error));
+            return;
+          }
+
+          if (data.status === 'success' && data.data?.content) {
+            setRegionInsights(prev => [...prev, {
+              insight: data.data.content,
+              type: 'region' as const
+            }]);
+          }
+        };
+
+        eventSource.onerror = (error) => {
+          eventSource.close();
+          reject(error);
+        };
+
+        // Cleanup function
+        return () => {
+          eventSource.close();
+        };
+      });
+    },
+    // Fetch this after product insights are fetched
+    enabled: Boolean(ticker && revenueData) && productInsights.length > 0,
     refetchOnWindowFocus: false,
     retry: false
   });
@@ -102,13 +153,13 @@ const Revenue = () => {
       percentage: item.percentage
     }))
   })).sort((a, b) => a.year - b.year)
-
+  console.log(regionInsights)
   return (
     <div className="revenue-charts">
       <Typography variant="h5" sx={{ mb: 2 }}>
         By product category
       </Typography>
-      <RevenueInsights insights={streamingInsights.filter(item => item.type === 'product')} />
+      <RevenueInsights insights={productInsights.filter(item => item.type === 'product')} />
       <Box sx={{ mt: 4 }}>
         <RevenueChart revenueData={productRevenueData} />
       </Box>
@@ -118,7 +169,7 @@ const Revenue = () => {
       <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>
         By geographic
       </Typography>
-      <RevenueInsights insights={streamingInsights.filter(item => item.type === 'region')} />
+      <RevenueInsights insights={regionInsights.filter(item => item.type === 'region')} />
       <Box sx={{ mt: 4 }}>
         <RevenueChart revenueData={regionRevenueData} />
       </Box>
