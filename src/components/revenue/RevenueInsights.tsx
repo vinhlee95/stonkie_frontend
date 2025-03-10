@@ -164,16 +164,41 @@ export default function RevenueInsights({ insights }: RevenueInsightsProps) {
           <Icon />
         </Box>
         <Box sx={scrollableContentStyles}>
-          <Typography
-            sx={{
-              fontSize: '1rem',
-              lineHeight: 1.5,
-              position: 'relative',
-              zIndex: 1,
-            }}
-          >
-            {insight}
-          </Typography>
+          {(() => {
+            const parts = insight.includes('Source:') ? insight.split('Source:') : [insight, ''];
+            const content = parts[0].trim();
+            const source = parts[1].trim();
+            
+            return (
+              <>
+                <Typography
+                  sx={{
+                    fontSize: '1rem',
+                    lineHeight: 1.5,
+                    position: 'relative',
+                    zIndex: 1,
+                    marginBottom: source ? '12px' : 0
+                  }}
+                >
+                  {content}
+                </Typography>
+                
+                {source && (
+                  <Typography
+                    sx={{
+                      fontSize: '0.9rem',
+                      fontStyle: 'italic',
+                      color: 'text.secondary',
+                      position: 'relative',
+                      zIndex: 1,
+                    }}
+                  >
+                    Source: {source}
+                  </Typography>
+                )}
+              </>
+            );
+          })()}
         </Box>
       </Paper>
     );
