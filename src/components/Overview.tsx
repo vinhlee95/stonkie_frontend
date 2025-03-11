@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Box } from '@mui/material';
 import { FinancialData, ReportType } from '../types'
-import KeyStats from './KeyStats';
+import KeyStats from './overview/KeyStats';
 import GrowthChart from './overview/GrowthChart';
 import EPSChart from './overview/EPSChart';
 import DebtCoverageChart from './overview/DebtCoverageChart';

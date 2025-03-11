@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Paper, Typography, Box } from '@mui/material';
-import { formatNumber } from '../utils/formatters'; // We'll move formatNumber to a utility file
+import { formatNumber } from '../../utils/formatters'; // We'll move formatNumber to a utility file
 
 interface KeyStatsProps {
   keyStats: {
