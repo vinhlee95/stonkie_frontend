@@ -6,6 +6,7 @@ import GrowthChart from './overview/GrowthChart';
 import EPSChart from './overview/EPSChart';
 import DebtCoverageChart from './overview/DebtCoverageChart';
 import { useQuery } from '@tanstack/react-query';
+import SWOT from './overview/SwotAnalysis';
 
 // Add new interface for key stats
 interface KeyStats {
@@ -39,6 +40,7 @@ const Overview: React.FC<OverviewProps> = ({ financialData, ticker }) => {
   return (
     <Box>
       <KeyStats keyStats={keyStats} />
+      <SWOT />
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
           <GrowthChart data={financialData.income_statement} />
