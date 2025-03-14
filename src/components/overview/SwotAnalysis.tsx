@@ -118,7 +118,7 @@ const SwotAnalysis = () => {
       
       <Box sx={{ flexGrow: 1 }}>
         {category.items.map((item, index) => (
-          <p key={index}>{item}</p>
+          <p key={index} style={{marginTop: 0}}>{item}</p>
         ))}
       </Box>
     </Box>
