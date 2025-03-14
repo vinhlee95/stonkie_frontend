@@ -35,7 +35,7 @@ const SwotAnalysis = () => {
       }
       return response.json();
     },
-    enabled: !!ticker,
+    staleTime: 1000 * 60 * 5, // cache the data for 5 minutes
   });
 
   if (isLoading) {
