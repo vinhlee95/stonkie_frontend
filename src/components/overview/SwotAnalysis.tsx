@@ -25,6 +25,7 @@ const SwotAnalysis = () => {
   const { ticker } = useParams<{ ticker: string }>();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isDarkMode = theme.palette.mode === 'dark';
   
   const { data, isLoading, error } = useQuery<SwotResponse>({
     queryKey: ['swot', ticker],
@@ -46,29 +47,29 @@ const SwotAnalysis = () => {
       title: 'Strengths',
       items: swotData?.strength,
       icon: '💪',
-      bgColor: '#e8f5e9', // Light green background
-      titleColor: '#2e7d32', // Green text
+      bgColor: isDarkMode ? '#1e3320' : '#e8f5e9', // Dark/light green background
+      titleColor: isDarkMode ? '#81c784' : '#2e7d32', // Green text adjusted for dark mode
     },
     {
       title: 'Weaknesses',
       items: swotData?.weakness,
       icon: '⚠️',
-      bgColor: '#ffebee', // Light red background
-      titleColor: '#c62828', // Red text
+      bgColor: isDarkMode ? '#321e1e' : '#ffebee', // Dark/light red background
+      titleColor: isDarkMode ? '#ef9a9a' : '#c62828', // Red text adjusted for dark mode
     },
     {
       title: 'Opportunities',
       items: swotData?.opportunity,
       icon: '🚀',
-      bgColor: '#e3f2fd', // Light blue background
-      titleColor: '#1565c0', // Blue text
+      bgColor: isDarkMode ? '#1a2c3d' : '#e3f2fd', // Dark/light blue background
+      titleColor: isDarkMode ? '#64b5f6' : '#1565c0', // Blue text adjusted for dark mode
     },
     {
       title: 'Threats',
       items: swotData?.threat,
       icon: '🛑',
-      bgColor: '#fff8e1', // Light yellow background
-      titleColor: '#f57f17', // Amber text
+      bgColor: isDarkMode ? '#2e2a1e' : '#fff8e1', // Dark/light yellow background
+      titleColor: isDarkMode ? '#ffd54f' : '#f57f17', // Amber text adjusted for dark mode
     },
   ];
 
@@ -113,26 +114,26 @@ const SwotAnalysis = () => {
     {
       type: 'strength',
       title: 'Strengths',
-      bgColor: '#e8f5e9', // Light green background
+      bgColor: isDarkMode ? '#1e3320' : '#e8f5e9', // Dark/light green background
       icon: '💪',
     },
     {
       type: 'weakness',
       title: 'Weaknesses',
-      bgColor: '#ffebee', // Light red background
+      bgColor: isDarkMode ? '#321e1e' : '#ffebee', // Dark/light red background
       icon: '⚠️',
     },
     {
       type: 'opportunity',
       title: 'Opportunities',
-      bgColor: '#e3f2fd', // Light blue background
+      bgColor: isDarkMode ? '#1a2c3d' : '#e3f2fd', // Dark/light blue background
       icon: '🚀',
     },
     {
       type: 'threat',
       title: 'Threats',
-      bgColor: '#fff8e1', // Light yellow background
-      icon: '🛑',
+      bgColor: isDarkMode ? '#2e2a1e' : '#fff8e1', // Dark/light yellow background
+      icon: '��',
     },
   ];
   
