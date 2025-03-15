@@ -29,13 +29,30 @@ const KeyStatComponent: React.FC<KeyStatsProps> = ({ ticker }) => {
     staleTime: 1000 * 60 * 5, // cache the data for 5 minutes
   });
 
-  if (!keyStats) return null;
+  // Render skeleton UI while loading
+  if (isLoading || !keyStats) {
+    return (
+      <Paper sx={{ p: 2, background: 'transparent' }} elevation={0}>
+        <Grid container spacing={2}>
+          {[...Array(6)].map((_, index) => (
+            <Grid item xs={12} md={3} key={index}>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ width: '80%', height: 20 }}>
+                  <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.1)', height: '100%', width: '100%', borderRadius: 1 }} />
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 1, width: '60%', height: 28 }}>
+                  <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.1)', height: '100%', width: '100%', borderRadius: 1 }} />
+                </Typography>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Paper>
+    );
+  }
 
   return (
     <Paper sx={{ p: 2, background: 'transparent' }} elevation={0}>
-      <Typography variant="h5" sx={{ mb: 3 }}>
-        Key Stats
-      </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
           <Box>
