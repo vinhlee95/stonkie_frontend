@@ -23,11 +23,16 @@ const fetchKeyStats = async (ticker: string) => {
 }
 
 const KeyStatComponent: React.FC<KeyStatsProps> = ({ ticker }) => {
-  const { data: keyStats, isLoading } = useQuery<KeyStats>({
+  const { data: keyStats, isLoading, error } = useQuery<KeyStats>({
     queryKey: ['keyStats', ticker],
     queryFn: () => fetchKeyStats(ticker),
     staleTime: 1000 * 60 * 5, // cache the data for 5 minutes
+    retry: 2,
   });
+
+  if(!isLoading && error) {
+    return null
+  }
 
   // Render skeleton UI while loading
   if (isLoading || !keyStats) {
