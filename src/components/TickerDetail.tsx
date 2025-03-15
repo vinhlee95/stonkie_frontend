@@ -10,12 +10,11 @@ interface TickerDetailProps {
   defaultTab: 'overview' | 'statements' | 'revenue';
   fetchFinancialData: (ticker: string, reportTypes?: ReportType[]) => Promise<any>;
   financialData: Record<ReportType, FinancialData | null>;
-  loading: boolean;
   error: string | null;
   setCurrentTicker: (ticker: string) => void;
 }
 
-const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, fetchFinancialData, loading, error, setCurrentTicker }) => {
+const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, fetchFinancialData, error, setCurrentTicker }) => {
   const { ticker } = useParams<{ ticker: string }>();
   const navigate = useNavigate();
   const [value, setValue] = useState(defaultTab);
@@ -77,14 +76,6 @@ const TickerDetail: React.FC<TickerDetailProps> = ({ defaultTab, financialData, 
       setCurrentTicker(ticker.toUpperCase());
     }
   }, [ticker]);
-
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <Box sx={{ width: '100%' }}>

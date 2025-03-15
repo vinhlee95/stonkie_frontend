@@ -188,7 +188,6 @@ const App: React.FC = () => {
                   defaultTab="overview" 
                   financialData={financialData}
                   fetchFinancialData={fetchFinancialData}
-                  loading={loading}
                   error={error}
                   setCurrentTicker={setTicker}
                 />} 
@@ -199,7 +198,6 @@ const App: React.FC = () => {
                   defaultTab="statements" 
                   financialData={financialData}
                   fetchFinancialData={fetchFinancialData}
-                  loading={loading}
                   error={error}
                   setCurrentTicker={setTicker}
                 />} 
@@ -210,7 +208,6 @@ const App: React.FC = () => {
                   defaultTab="revenue" 
                   financialData={financialData}
                   fetchFinancialData={fetchFinancialData}
-                  loading={loading}
                   error={error}
                   setCurrentTicker={setTicker}
                 />} 
