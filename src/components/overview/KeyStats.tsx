@@ -1,19 +1,34 @@
 import React from 'react';
 import { Grid, Paper, Typography, Box } from '@mui/material';
 import { formatNumber } from '../../utils/formatters'; // We'll move formatNumber to a utility file
+import { useQuery } from '@tanstack/react-query';
+import { BACKEND_URL } from '../../utils/db';
 
-interface KeyStatsProps {
-  keyStats: {
-    market_cap: number;
-    pe_ratio: number;
-    revenue: number;
-    net_income: number;
-    basic_eps: number;
-    dividend_yield: number;
-  } | null;
+interface KeyStats {
+  market_cap: number;
+  pe_ratio: number;
+  revenue: number;
+  net_income: number;
+  basic_eps: number;
+  dividend_yield: number;
 }
 
-const KeyStats: React.FC<KeyStatsProps> = ({ keyStats }) => {
+interface KeyStatsProps {
+  ticker: string;
+}
+
+const fetchKeyStats = async (ticker: string) => {
+  const response = await fetch(`${BACKEND_URL}/api/companies/${ticker}/key-stats`);
+  return (await response.json()).data;
+}
+
+const KeyStatComponent: React.FC<KeyStatsProps> = ({ ticker }) => {
+  const { data: keyStats, isLoading } = useQuery<KeyStats>({
+    queryKey: ['keyStats', ticker],
+    queryFn: () => fetchKeyStats(ticker),
+    staleTime: 1000 * 60 * 5, // cache the data for 5 minutes
+  });
+
   if (!keyStats) return null;
 
   return (
@@ -87,4 +102,4 @@ const KeyStats: React.FC<KeyStatsProps> = ({ keyStats }) => {
   );
 };
 
-export default KeyStats; 
+export default KeyStatComponent; 

@@ -5,7 +5,6 @@ import KeyStats from './overview/KeyStats';
 import GrowthChart from './overview/GrowthChart';
 import EPSChart from './overview/EPSChart';
 import DebtCoverageChart from './overview/DebtCoverageChart';
-import { useQuery } from '@tanstack/react-query';
 import SWOT from './overview/SwotAnalysis';
 
 // Add new interface for key stats
@@ -25,21 +24,10 @@ interface OverviewProps {
   ticker: string; // Add ticker prop
 }
 
-const fetchKeyStats = async (ticker: string) => {
-  const response = await fetch(`${BACKEND_URL}/api/companies/${ticker}/key-stats`);
-  return (await response.json()).data;
-}
-
 const Overview: React.FC<OverviewProps> = ({ financialData, ticker }) => {
-  const {data: keyStats} = useQuery({
-    queryKey: ['keyStats', ticker],
-    queryFn: () => fetchKeyStats(ticker),
-    staleTime: 1000 * 60 * 5, // cache the data for 5 minutes
-  })
-
   return (
     <Box>
-      <KeyStats keyStats={keyStats} />
+      <KeyStats ticker={ticker} />
       <SWOT />
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
